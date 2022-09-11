@@ -1,0 +1,2 @@
+db: "root:password@tcp(localhost:3306)/team_8"
+port: :3000
