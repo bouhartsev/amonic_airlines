@@ -1,24 +1,44 @@
 package http
 
 import (
-	"context"
-	"database/sql"
+	"errors"
 	"github.com/bouhartsev/amonic_airlines/server/internal/auth"
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain"
-	"github.com/golang-jwt/jwt"
+	"github.com/bouhartsev/amonic_airlines/server/internal/domain/errdomain"
+	"github.com/bouhartsev/amonic_airlines/server/internal/infrastructure/utils"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-type repository struct {
-	conn *sql.DB
+type handler struct {
+	useCase auth.UseCase
 }
 
-type AuthClaims struct {
-	jwt.StandardClaims
+func NewAuthHandler(uc auth.UseCase) *handler {
+	return &handler{useCase: uc}
 }
 
-func NewAuthRepository(conn *sql.DB) auth.Repository {
-	return &repository{conn}
-}
+func (h *handler) SignIn(c *gin.Context) {
+	input := new(domain.SignInRequest)
 
-func (r *repository) SignIn(ctx context.Context, request *domain.AuthSignInRequest) {
+	if err := c.BindJSON(input); err != nil {
+		c.JSON(http.StatusBadRequest, errdomain.InvalidJSONError)
+		return
+	}
+
+	token, err := h.useCase.SignIn(c.Request.Context(), input)
+
+	// TODO: check why it doesn't return json properly
+	if err != nil {
+		if errors.Is(err, errdomain.InvalidCredentialsError) {
+			//c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			utils.ErrorResponse(c, http.StatusBadRequest, err)
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, &domain.SignInResponse{Token: *token})
 }

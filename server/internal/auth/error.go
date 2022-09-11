@@ -3,5 +3,7 @@ package auth
 import "errors"
 
 var (
-	ErrUserNotFound = errors.New(`user not found`)
+	ErrInvalidCredentials  = errors.New(`invalid credentials`)
+	ErrTokenIsNotPresented = errors.New(`token is not presented`)
+	ErrInvalidAccessToken  = errors.New(`invalid access token`)
 )

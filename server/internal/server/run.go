@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -11,16 +10,7 @@ import (
 )
 
 func (s *server) Run() error {
-	router := gin.Default()
-
-	router.Use(
-		gin.Logger(),
-		gin.Recovery(),
-	)
-
-	router.GET("/api/heartbeat", func(c *gin.Context) {
-		c.String(http.StatusOK, "%s", "Hello, world!")
-	})
+	router := s.initRoutes()
 
 	httpServer := &http.Server{
 		Addr:         s.cfg.AppPort,
@@ -47,5 +37,27 @@ func (s *server) Run() error {
 	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdown()
 
-	return httpServer.Shutdown(ctx)
+	return func() error {
+		s.logger.Info("shutting down the server...")
+
+		err := s.db.Close()
+
+		if err != nil {
+			s.logger.Error(err.Error())
+			return err
+		}
+
+		s.logger.Info("database had shut down")
+
+		err = httpServer.Shutdown(ctx)
+
+		if err != nil {
+			s.logger.Error(err.Error())
+			return err
+		}
+
+		s.logger.Info("server had shut down successfully")
+
+		return nil
+	}()
 }
