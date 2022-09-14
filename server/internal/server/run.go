@@ -13,10 +13,8 @@ func (s *server) Run() error {
 	router := s.initRoutes()
 
 	httpServer := &http.Server{
-		Addr:         s.cfg.AppPort,
-		Handler:      router,
-		ReadTimeout:  1 << 20,
-		WriteTimeout: 1 << 20,
+		Addr:    s.cfg.AppPort,
+		Handler: router,
 	}
 
 	// Graceful Shutdown

@@ -6,9 +6,13 @@ type ErrorResponse struct {
 	Code    string `json:"code"`
 }
 
-func (e *ErrorResponse) Error() string {
+func (e ErrorResponse) Error() string {
 	return e.Message
 }
+
+var (
+	_ error = &ErrorResponse{}
+)
 
 var (
 	InvalidJSONError = &ErrorResponse{
