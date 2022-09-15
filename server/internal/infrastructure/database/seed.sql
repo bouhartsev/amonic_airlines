@@ -15,9 +15,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE DATABASE IF NOT EXISTS `team_8`;
-
-use `team_8`;
 --
 -- Table structure for table `aircrafts`
 --
@@ -367,7 +364,7 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `ID` int(11) NOT NULL,
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
   `RoleID` int(11) NOT NULL,
   `Email` varchar(150) CHARACTER SET utf8mb4 NOT NULL,
   `Password` varchar(50) CHARACTER SET utf8mb4 NOT NULL,

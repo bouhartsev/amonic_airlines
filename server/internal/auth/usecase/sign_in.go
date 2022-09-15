@@ -21,6 +21,10 @@ func (u *useCase) SignIn(ctx context.Context, request *domain.SignInRequest) (*s
 		return nil, errdomain.NewInternalError(err.Error())
 	}
 
+	if user.Active != nil && *user.Active == false {
+		return nil, errdomain.UserDisabledError
+	}
+
 	claims := domain.AuthClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 30)), // 30 days

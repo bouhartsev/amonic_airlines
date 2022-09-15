@@ -6,22 +6,23 @@ import (
 	"github.com/bouhartsev/amonic_airlines/server/internal/utils/delivery"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
-func (h *handler) SignIn(c *gin.Context) {
-	input := new(domain.SignInRequest)
+func (h *handler) GetUser(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Param("user_id"))
 
-	if err := delivery.ReadJson(c.Request, &input); err != nil {
-		c.JSON(http.StatusBadRequest, errdomain.InvalidJSONError)
+	if err != nil {
+		delivery.ErrorResponse(c, errdomain.UserNotFoundError)
 		return
 	}
 
-	token, err := h.useCase.SignIn(c.Request.Context(), input)
+	user, err := h.useCase.GetUser(c.Request.Context(), &domain.GetUserRequest{UserId: userId})
 
 	if err != nil {
 		delivery.ErrorResponse(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, &domain.SignInResponse{Token: *token})
+	c.JSON(http.StatusOK, user)
 }

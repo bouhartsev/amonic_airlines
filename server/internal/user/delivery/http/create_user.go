@@ -8,20 +8,20 @@ import (
 	"net/http"
 )
 
-func (h *handler) SignIn(c *gin.Context) {
-	input := new(domain.SignInRequest)
+func (h *handler) CreateUser(c *gin.Context) {
+	input := new(domain.CreateUserRequest)
 
 	if err := delivery.ReadJson(c.Request, &input); err != nil {
 		c.JSON(http.StatusBadRequest, errdomain.InvalidJSONError)
 		return
 	}
 
-	token, err := h.useCase.SignIn(c.Request.Context(), input)
+	user, err := h.useCase.CreateUser(c.Request.Context(), input)
 
 	if err != nil {
 		delivery.ErrorResponse(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, &domain.SignInResponse{Token: *token})
+	c.JSON(http.StatusCreated, user)
 }

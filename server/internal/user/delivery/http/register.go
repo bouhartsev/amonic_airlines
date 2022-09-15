@@ -5,8 +5,9 @@ import (
 )
 
 func (h *handler) RegisterEndpoints(router gin.IRouter) {
-	endpoint := router.Group(`/auth`)
+	endpoint := router.Group(`/users`)
 
 	// TODO: sign-out
-	endpoint.POST(`/sign-in`, h.SignIn)
+	endpoint.POST(`/`, h.CreateUser)
+	endpoint.GET(`/:user_id`, h.GetUser)
 }

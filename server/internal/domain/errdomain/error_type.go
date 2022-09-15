@@ -3,7 +3,6 @@ package errdomain
 const (
 	InternalType        = `INTERNAL`
 	InvalidRequestType  = `INVALID_REQUEST`
-	ValidationType      = `VALIDATION_ERROR`
 	ObjectNotFoundType  = `OBJECT_NOT_FOUND`
 	ObjectDisabledType  = `OBJECT_DISABLED`
 	ObjectDuplicateType = `OBJECT_DUPLICATE`

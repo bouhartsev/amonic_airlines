@@ -7,5 +7,4 @@ import (
 
 type Repository interface {
 	SignIn(ctx context.Context, request *domain.SignInRequest) (*domain.User, error)
-	//SignOut(ctx context.Context) error
 }
