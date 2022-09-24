@@ -1,22 +1,17 @@
 import { observer } from "mobx-react-lite";
+import { useStore } from "stores";
 import NavBarAuth from "./NavBarAuth";
 import NavBarPublic from "./NavBarPublic";
-import {
-  AppBar,
-  Container,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Container, Toolbar } from "@mui/material";
 
-type Props = {};
-
-const NavBar = (props: Props) => {
+const NavBar = () => {
+  const { userStore } = useStore();
   return (
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* If not auth */}
-          {/* <NavBarPublic /> */}
-          <NavBarAuth />
+          {!userStore.isLogged ? <NavBarPublic /> : <NavBarAuth />}
         </Toolbar>
       </Container>
     </AppBar>

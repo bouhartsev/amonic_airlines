@@ -1,8 +1,8 @@
 import { createContext, useContext } from "react";
-import todoStore from "./TodoStore";
+import UserStore from "./UserStore";
 
 const store = {
-  todoStore: todoStore(),
+  userStore: new UserStore(),
 };
 
 export const StoreContext = createContext(store);

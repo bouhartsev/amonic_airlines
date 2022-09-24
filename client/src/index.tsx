@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import store, { StoreContext } from "./stores";
+import store, { StoreContext } from "stores";
 import App from "./App";
 import * as serviceWorkerRegistration from "utils/serviceWorkerRegistration";
 import reportWebVitals from "utils/reportWebVitals";

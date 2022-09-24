@@ -1,31 +1,32 @@
-// import { observable, action, computed } from 'mobx';
+import { makeAutoObservable } from "mobx"
+import api, { setAuthToken } from "utils/api"
 
-// class UserStore {
-//     @observable users = null;
+type userType = { id: number, name: string, role: string };
 
-//     constructor(rootStore) {
-//         this.rootStore = rootStore;
-//     }
+class UserStore {
+    isLogged = false;
+    userData = {} as userType;
+    users = [] as userType[];
+    status = "initial";
 
-//     @action setUsers = users => {
-//         this.users = users;
-//     };
+    constructor() {
+        makeAutoObservable(this);
+    }
 
-//     @action setUser = (user, uid) => {
-//         if (!this.users) {
-//             this.users = {};
-//         }
+    login = (login: string, password: string) => {
+        return api.post("/auth/sign-in", { login, password })
+            .then((response) => {
+                this.isLogged = true;
+                localStorage.setItem("jwtToken", response.data.token);
+                setAuthToken(response.data.token);
 
-//         this.users[uid] = user;
-//     };
+            })
+            .catch((err) => { this.status = "error"; })
+    }
 
-//     @computed get userList() {
-//         return Object.keys(this.users || {}).map(key => ({
-//             ...this.users[key],
-//             uid: key,
-//         }));
-//     }
-// }
+    logout = () => {
+        return;
+    }
+};
 
-// export default UserStore;
-export {};
+export default UserStore;
