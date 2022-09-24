@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import "./style.scoped.css";
 
 const handledErrors: { [code: number]: { status: string; message: string } } = {
   403: {
@@ -17,8 +16,8 @@ const handledErrors: { [code: number]: { status: string; message: string } } = {
 
 const Error = ({ code = 404 }) => {
   return (
-    <Box sx={{ textAlign: "center" }}>
-      <Typography variant="h2" gutterBottom className="test">
+    <Box sx={{ textAlign: "center", mt: 8 }}>
+      <Typography variant="h2" gutterBottom>
         {code} | {handledErrors[code]?.status}
       </Typography>
       <Typography variant="subtitle1" gutterBottom>
