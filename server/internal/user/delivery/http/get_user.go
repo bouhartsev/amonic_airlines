@@ -9,6 +9,16 @@ import (
 	"strconv"
 )
 
+// GetUser godoc
+// @Summary Возвращает информацию о пользователе.
+// @Description Если пользователь не найден, вернет ошибку с кодом `user:not_found`.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user_id path int true "Идентификатор пользователя"
+// @Failure 404 {object} errdomain.ErrorResponse
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/users/{user_id} [get]
 func (h *handler) GetUser(c *gin.Context) {
 	userId, err := strconv.Atoi(c.Param("user_id"))
 

@@ -8,6 +8,14 @@ import (
 	"strconv"
 )
 
+// GetUsers godoc
+// @Summary Возвращает список пользователей.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param officeId query int true "Фильтрация по офису, к которому принадлежат пользователи"
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/users [get]
 func (h *handler) GetUsers(c *gin.Context) {
 	var officeId *int
 
