@@ -1,6 +1,7 @@
 package server
 
 import (
+	_ "github.com/bouhartsev/amonic_airlines/server/docs"
 	authHandler "github.com/bouhartsev/amonic_airlines/server/internal/auth/delivery/http"
 	authRepository "github.com/bouhartsev/amonic_airlines/server/internal/auth/repository"
 	authUseCase "github.com/bouhartsev/amonic_airlines/server/internal/auth/usecase"
@@ -8,6 +9,8 @@ import (
 	userRepository "github.com/bouhartsev/amonic_airlines/server/internal/user/repository"
 	userUseCase "github.com/bouhartsev/amonic_airlines/server/internal/user/usecase"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func (s *server) initRoutes() *gin.Engine {
@@ -27,6 +30,9 @@ func (s *server) initRoutes() *gin.Engine {
 	for _, h := range handlers {
 		h.RegisterEndpoints(api)
 	}
+
+	// Documentation endpoint registration
+	router.GET(`/api/docs/*any`, ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
 }

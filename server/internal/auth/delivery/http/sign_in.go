@@ -8,6 +8,22 @@ import (
 	"net/http"
 )
 
+// SignIn godoc
+// @Summary Авторизирует пользователя.
+// @Description Возвращает JWT токен при успешной авторизации.
+// @Description
+// @Description Cписок возможных кодов ошибок:
+// @Description * `invalid_credentials` - Неверный логин или пароль.
+// @Description * `user:disabled` - Пользователь заблокирован.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param input body domain.SignInRequest true "JSON input"
+// @Success 201 {object} errdomain.ErrorResponse
+// @Failure 404 {object} errdomain.ErrorResponse
+// @Failure 409 {object} errdomain.ErrorResponse
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/auth/sign-in [post]
 func (h *handler) SignIn(c *gin.Context) {
 	input := new(domain.SignInRequest)
 

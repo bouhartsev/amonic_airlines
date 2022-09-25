@@ -9,5 +9,6 @@ func (h *handler) RegisterEndpoints(router gin.IRouter) {
 
 	// TODO: sign-out
 	endpoint.POST(`/`, h.CreateUser)
+	endpoint.GET(`/`, h.GetUsers)
 	endpoint.GET(`/:user_id`, h.GetUser)
 }

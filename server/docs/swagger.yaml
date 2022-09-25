@@ -1,0 +1,176 @@
+basePath: /api
+definitions:
+  domain.CreateUserRequest:
+    properties:
+      birthdate:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      officeId:
+        type: integer
+      password:
+        type: string
+    type: object
+  domain.SignInRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  domain.User:
+    properties:
+      active:
+        type: boolean
+      birthdate:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      officeId:
+        type: integer
+      roleId:
+        type: integer
+    type: object
+  errdomain.ErrorResponse:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      type:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Amonic Airlines fucking project. Go fuck yourself, logach(i).
+  title: Amonic Airlines REST API Documentation
+  version: "1.0"
+paths:
+  /api/auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Возвращает JWT токен при успешной авторизации.
+
+        Cписок возможных кодов ошибок:
+        * `invalid_credentials` - Неверный логин или пароль.
+        * `user:disabled` - Пользователь заблокирован.
+      parameters:
+      - description: JSON input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.SignInRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+      summary: Авторизирует пользователя.
+      tags:
+      - Auth
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Фильтрация по офису, к которому принадлежат пользователи
+        in: query
+        name: officeId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+      summary: Возвращает список пользователей.
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Создает пользователя. При дубликате email возвращает ошибку с кодом
+        `user.email:already_taken`.
+      parameters:
+      - description: JSON input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+      summary: Создает пользователя.
+      tags:
+      - Users
+  /api/users/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Если пользователь не найден, вернет ошибку с кодом `user:not_found`.
+      parameters:
+      - description: Идентификатор пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errdomain.ErrorResponse'
+      summary: Возвращает информацию о пользователе.
+      tags:
+      - Users
+swagger: "2.0"
