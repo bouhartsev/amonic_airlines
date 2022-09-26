@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import UserStore from "./UserStore";
 
 const store = {
-  userStore: new UserStore(),
+  userStore: new UserStore(this),
 };
 
 export const StoreContext = createContext(store);

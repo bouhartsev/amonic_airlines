@@ -16,13 +16,17 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Menu as MenuIcon } from "@mui/icons-material";
 import Logo from "components/Logo";
 
 const pages = ["Schedules", "Booking", "Tickets", "Surveys"]; // title and href
 const options = ["Dashboard", "Profile", "Logout"]; // AND "USERS" IF ADMIN
 
-const NavBar = () => {
+type Props = {
+  role?: string,
+}
+
+const NavBar = (props: Props) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null

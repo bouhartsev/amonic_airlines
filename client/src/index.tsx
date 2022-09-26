@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import store, { StoreContext } from "stores";
+import { ThemeProvider } from "@mui/material/styles";
+import { BrowserRouter } from "react-router-dom";
+import theme from "utils/theme";
 import App from "./App";
 import * as serviceWorkerRegistration from "utils/serviceWorkerRegistration";
 import reportWebVitals from "utils/reportWebVitals";
@@ -12,7 +15,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <StoreContext.Provider value={store}>
-      <App />
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
     </StoreContext.Provider>
   </React.StrictMode>
 );

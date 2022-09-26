@@ -1,47 +1,53 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useLayoutEffect, useState } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 import NavBar from "components/NavBar";
 import Footer from "components/Footer";
+import ErrorBoundary from "components/ErrorBoundary";
 import Home from "pages/Home";
-import Error from "pages/Error";
+import ErrorPage from "pages/Error";
 
 import Protected from "components/Auth/Protected";
 import Login from "components/Auth/Login";
-// import Logout from "components/Auth/Logout";
+import Logout from "components/Auth/Logout";
 
 import Schedules from "pages/Schedules";
+import Profile from "pages/Profile";
+import Users from "pages/Users";
 
 import Container from "@mui/material/Container";
-import { ThemeProvider } from "@mui/material/styles";
-import theme from "utils/theme";
 
 function App() {
+  const location = useLocation();
+  const [path, setPath] = useState(location.pathname);
+  useLayoutEffect(() => setPath(location.pathname), [location.pathname]);
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <NavBar />
-          <Container maxWidth="xl" component="main">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
+      <NavBar />
+      <Container maxWidth="xl" component="main" sx={{ mt: 4 }}>
+        <ErrorBoundary key={path}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
 
-              {/* Protected routes (only for authorized users)  */}
-              <Route element={<Protected />}>
-                <Route path="/schedules" element={<Schedules />} />
-                {/* <Route path="/booking" element={<Booking />} />
+          {/* Protected routes (only for authorized users)  */}
+          <Route element={<Protected />}>
+            <Route path="/schedules" element={<Schedules />} />
+            {/* <Route path="/booking" element={<Booking />} />
                 <Route path="/tickets" element={<Tickets />} />
                 <Route path="/surveys" element={<Surveys />} /> */}
-                {/* <Route path="/logout" element={<Logout />} /> */}
-              </Route>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+          <Route element={<Protected role="Administrator" />}>
+            <Route path="/users" element={<Users />} />
+          </Route>
 
-              <Route path="/403" element={<Error code={403} />} />
-              <Route path="*" element={<Error />} />
-            </Routes>
-          </Container>
-          <Footer />
-        </BrowserRouter>
-      </ThemeProvider>
+          <Route path="*" element={<ErrorPage code="404" />} />
+        </Routes>
+        </ErrorBoundary>
+      </Container>
+      <Footer />
     </>
   );
 }

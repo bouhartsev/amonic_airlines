@@ -9,7 +9,7 @@ type Props = {
 const Protected = (props: Props) => {
   const { userStore } = useStore();
   if (!userStore.isLogged) return <Navigate to="/login" />;
-  else if (!!props.role && props.role!==userStore.userData.role) return <Navigate to="/403" />;
+  else if (!!props.role && props.role!==userStore.userData.role) throw new Error("403");
   return <Outlet />;
 };
 

@@ -3,9 +3,7 @@ import { Link as LinkRouter } from "react-router-dom";
 import Logo from "components/Logo";
 import { Button } from "@mui/material";
 
-type Props = {};
-
-const NavBarPublic = (props: Props) => {
+const NavBarPublic = () => {
   return (
     <>
       <Logo sx={{ flexGrow: 1 }}/>
