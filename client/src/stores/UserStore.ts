@@ -16,6 +16,7 @@ class UserStore extends BasicStore {
     users = [] as userType[];
 
     login = (username: string, password: string) => {
+        this.status = "pending";
         // temp
         // this.isLogged = true;
 

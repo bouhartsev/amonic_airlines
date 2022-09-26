@@ -1,7 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
 import { Navigate } from "react-router-dom";
-import { Box, Avatar, Typography, Button } from "@mui/material";
+import { Box, Avatar, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { LockOutlined } from "@mui/icons-material";
 import {
   useForm,
@@ -65,17 +66,16 @@ const Login = () => {
           fullWidth
           margin="normal"
         />
-        <Typography color="error">
-          {userStore.error}
-        </Typography>
-        <Button
+        <Typography color="error">{userStore.error}</Typography>
+        <LoadingButton
           type="submit"
-          // fullWidth
+          fullWidth
+          loading={userStore.status === "pending"}
           variant="contained"
-          sx={{ mt: 3, mb: 2 }}
+          sx={{ my: 3 }}
         >
           Sign In
-        </Button>
+        </LoadingButton>
       </FormContainer>
     </Box>
   );
