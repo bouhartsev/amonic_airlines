@@ -8,6 +8,17 @@ import (
 	"net/http"
 )
 
+// CreateUser godoc
+// @Summary Создает пользователя.
+// @Description Создает пользователя. При дубликате email возвращает ошибку с кодом `user.email:already_taken`.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param input body domain.CreateUserRequest true "JSON input"
+// @Success 201 {object} domain.User
+// @Failure 400 {object} errdomain.ErrorResponse
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/users [post]
 func (h *handler) CreateUser(c *gin.Context) {
 	input := new(domain.CreateUserRequest)
 
