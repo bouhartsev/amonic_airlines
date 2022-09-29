@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+// import "assets/fonts.css"
 import "./index.css";
 import store, { StoreContext } from "stores";
 import { ThemeProvider } from "@mui/material/styles";

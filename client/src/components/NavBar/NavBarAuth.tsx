@@ -17,16 +17,24 @@ import {
   ListItemText,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import Logo from "components/Logo";
+import Image from "components/Image";
 
 const pages = ["Schedules", "Booking", "Tickets", "Surveys"]; // title and href
-const options = ["Dashboard", "Profile", "Logout"]; // AND "USERS" IF ADMIN
 
 type Props = {
-  role?: string,
-}
+  role?: string;
+};
 
 const NavBar = (props: Props) => {
+  const [options] = React.useState(
+    [
+      "Dashboard",
+      props.role === "Administrator" && "Users",
+      "Profile",
+      "Logout",
+    ].filter(Boolean)
+  ); // AND "USERS" IF ADMIN
+
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -61,7 +69,9 @@ const NavBar = (props: Props) => {
         }}
       >
         <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-          <Logo />
+          <Typography component="b" variant="h4">
+            Menu
+          </Typography>
           <Divider />
           <List>
             {pages.map((page) => (
@@ -85,19 +95,20 @@ const NavBar = (props: Props) => {
         aria-haspopup="true"
         onClick={handleDrawerToggle}
         color="inherit"
-        sx={{ mr: 2, display: { sm: "none" } }}
+        sx={{ display: { sm: "none" } }}
       >
         <MenuIcon />
       </IconButton>
-      <Logo sx={{ mr: 1 }} />
-      <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" } }}>
+      <Image path="logo_colors" hasSet />
+      <Box sx={{ flexGrow: 1, ml: 3, display: { xs: "none", sm: "flex" } }}>
         {pages.map((page) => (
           <Button
             key={page}
             // onClick={handleCloseNavMenu}
             component={LinkRouter}
             to={page}
-            sx={{ my: 2, color: "white", display: "block" }}
+            color="inherit"
+            // sx={{ my: 2, color: "inherit", display: "block" }}
           >
             {page}
           </Button>
@@ -126,16 +137,19 @@ const NavBar = (props: Props) => {
           open={Boolean(anchorElUser)}
           onClose={handleCloseUserMenu}
         >
-          {options.map((setting) => (
-            <MenuItem
-              key={setting}
-              onClick={handleCloseUserMenu}
-              component={LinkRouter}
-              to={setting}
-            >
-              <Typography textAlign="center">{setting}</Typography>
-            </MenuItem>
-          ))}
+          {options.map(
+            (setting) =>
+              !!setting && (
+                <MenuItem
+                  key={setting}
+                  onClick={handleCloseUserMenu}
+                  component={LinkRouter}
+                  to={setting}
+                >
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              )
+          )}
         </Menu>
       </Box>
     </>

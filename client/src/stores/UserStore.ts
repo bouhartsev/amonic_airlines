@@ -3,7 +3,7 @@ import { action } from "mobx";
 import api, { setAuthToken } from "utils/api"
 import BasicStore from "./BasicStore"
 
-type userType = { id: number, name: string, role: string };
+type userType = { id: number, name: string, role: "User"|"Administrator" };
 
 class UserStore extends BasicStore {
     constructor(...args: any[]) {
@@ -18,7 +18,7 @@ class UserStore extends BasicStore {
     login = (username: string, password: string) => {
         this.status = "pending";
         // temp
-        // this.isLogged = true;
+        this.isLogged = true;
 
         return api.post("/auth/sign-in", { username, password })
             .then((response) => {
