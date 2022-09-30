@@ -41,8 +41,8 @@ const Login = () => {
         flexDirection: "column",
         alignItems: "center",
         m: "auto",
+        width: 400
       }}
-      maxWidth="sm"
     >
       <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
         <LockOutlined />
@@ -50,7 +50,10 @@ const Login = () => {
       <Typography component="h1" variant="h5">
         Login
       </Typography>
-      <FormContainer formContext={formContext} onSuccess={handleSubmit}>
+      <FormContainer
+        formContext={formContext}
+        onSuccess={handleSubmit}
+      >
         <TextFieldElement
           required
           type="email"
@@ -71,6 +74,7 @@ const Login = () => {
           type="submit"
           fullWidth
           loading={userStore.status === "pending"}
+          disabled={userStore.status === "forbidden"}
           variant="contained"
           sx={{ my: 3 }}
         >
