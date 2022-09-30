@@ -3,16 +3,18 @@ import { action } from "mobx";
 import api, { setAuthToken } from "utils/api"
 import BasicStore from "./BasicStore"
 
-type userType = { id: number, name: string, role: string };
+type userType = { id: number, name: string, role: "User"|"Administrator" };
 
 class UserStore extends BasicStore {
     constructor(...args: any[]) {
-        super(args);
+        super(...args);
         makeSimpleAutoObservable(this);
+        // temp
+        this.isLogged = true;
     }
 
     isLogged = false;
-    userData = {} as userType;
+    userData = {role: "Administrator"} as userType;
     users = [] as userType[];
 
     login = (username: string, password: string) => {
@@ -20,23 +22,26 @@ class UserStore extends BasicStore {
         // temp
         // this.isLogged = true;
 
-        return api.post("/auth/sign-in", { username, password })
-            .then((response) => {
+        return this.rootStore.fakeStore.newLoginAtt().then(()=>
+            api.post("/auth/sign-in", { username, password }) )
+            .then((response: any) => {
                 this.isLogged = true;
                 localStorage.setItem("jwtToken", response.data.token);
                 setAuthToken(response.data.token);
                 // get user data
             })
-            .catch((err) => {
+            .catch((err: any) => {
                 this.status = "error";
                 switch (err.code) {
                     case "AttemptsExceeded":
                         let tryAfter = 10;
+                        this.status = "forbidden";
                         let attemptsTimer = setInterval(action(() => {
                             this.error = `You entered the credentials incorrectly 3 times. Next attempt after ${tryAfter--} seconds.`
                             if (tryAfter === 0) {
                                 clearInterval(attemptsTimer);
-                                if (this.status === "error") {
+                                this.rootStore.fakeStore.resetLoginAtt();
+                                if (this.status === "error" || this.status === "forbidden") {
                                     this.error = "";
                                     this.status = "initial";
                                 }

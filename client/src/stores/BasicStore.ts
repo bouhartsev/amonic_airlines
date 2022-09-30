@@ -2,7 +2,7 @@
 
 abstract class BasicStore {
     rootStore
-    status = "initial"; // initial, pending, success, error
+    status = "initial" as "initial"|"pending"|"success"|"error"|"forbidden";
     error = null as string | null;
 
     constructor(rootStore?: any) {

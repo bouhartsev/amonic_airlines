@@ -26,7 +26,6 @@ class ErrorBoundary extends Component<Props, State> {
   // }
   public componentDidMount(): void {
     const showError = (error: any) => {
-      console.log(error);
       this.setState({ error: String(error), showSmall: true });
     };
     window.onerror = showError;

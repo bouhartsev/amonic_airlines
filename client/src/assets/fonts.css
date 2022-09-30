@@ -1,0 +1,68 @@
+@font-face {
+    font-family: "Tex Gyre Adventor";
+    src: url("./fonts/TeXGyreAdventor-Regular.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Tex Gyre Adventor";
+    src: url("./fonts/TeXGyreAdventor-Bold.ttf") format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Tex Gyre Adventor";
+    src: url("./fonts/TeXGyreAdventor-BoldItalic.ttf") format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Tex Gyre Adventor";
+    src: url("./fonts/TeXGyreAdventor-Italic.ttf") format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Twentieth Century";
+    src: url("./fonts/TCM.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Twentieth Century";
+    src: url("./fonts/TCB.ttf") format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Twentieth Century";
+    src: url("./fonts/TCBI.ttf") format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Twentieth Century";
+    src: url("./fonts/TCMI.ttf") format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Twentieth Century";
+    src: url("./fonts/TCCM.ttf") format('truetype');
+    font-weight: normal;
+    font-style: oblique;
+}
+@font-face {
+    font-family: "Twentieth Century";
+    src: url("./fonts/TCCB.ttf") format('truetype');
+    font-weight: bold;
+    font-style: oblique;
+}
+@font-face {
+    font-family: "Twentieth Century";
+    src: url("./fonts/TCCEB.ttf") format('truetype');
+    font-weight: 900;
+    font-style: oblique;
+}

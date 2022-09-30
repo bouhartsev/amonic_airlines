@@ -1,5 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import { CssBaseline, Container } from '@mui/material';
+
 
 import NavBar from "components/NavBar";
 import Footer from "components/Footer";
@@ -15,16 +17,15 @@ import Schedules from "pages/Schedules";
 import Profile from "pages/Profile";
 import Users from "pages/Users";
 
-import Container from "@mui/material/Container";
-
 function App() {
   const location = useLocation();
   const [path, setPath] = useState(location.pathname);
   useLayoutEffect(() => setPath(location.pathname), [location.pathname]);
   return (
     <>
+      <CssBaseline />
       <NavBar />
-      <Container maxWidth="xl" component="main" sx={{ mt: 4 }}>
+      <Container maxWidth="xl" component="main" sx={{ mt: 3 }}>
         <ErrorBoundary key={path}>
         <Routes>
           <Route path="/" element={<Home />} />
