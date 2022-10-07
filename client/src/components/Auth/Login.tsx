@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
-import { Navigate } from "react-router-dom";
-import { Box, Avatar, Typography } from "@mui/material";
+import { Navigate, Link as RouterLink } from "react-router-dom";
+import { Box, Avatar, Typography, Button } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { LockOutlined } from "@mui/icons-material";
 import {
@@ -70,16 +70,18 @@ const Login = () => {
           margin="normal"
         />
         <Typography color="error">{userStore.error}</Typography>
-        <LoadingButton
-          type="submit"
-          fullWidth
-          loading={userStore.status === "pending"}
-          disabled={userStore.status === "forbidden"}
-          variant="contained"
-          sx={{ my: 3 }}
-        >
-          Sign In
-        </LoadingButton>
+        <Box sx={{ my: 3, display: "flex", gap: 1 }}>
+          <LoadingButton
+            type="submit"
+            fullWidth
+            loading={userStore.status === "pending"}
+            disabled={userStore.status === "forbidden"}
+            variant="contained"
+          >
+            Sign In
+          </LoadingButton>
+          <Button component={RouterLink} to="/" variant="contained" color="warning">Exit</Button>
+        </Box>
       </FormContainer>
     </Box>
   );
