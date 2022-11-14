@@ -1,0 +1,21 @@
+.passengers-list {
+    margin: 0 auto;
+    max-width: 900px;
+}
+
+.css-177gid-MuiTableCell-root { 
+    text-align: left !important;
+}
+
+.passenger-list__title {
+    margin-bottom: 10px;
+}
+
+.css-11xur9t-MuiPaper-root-MuiTableContainer-root {
+    border-top: 1px solid rgba(224, 224, 224, 1);
+}
+
+.btns {
+    margin-top: 5px;
+    margin-bottom: 50px;
+}

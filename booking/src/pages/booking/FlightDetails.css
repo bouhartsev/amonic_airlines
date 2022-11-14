@@ -1,0 +1,15 @@
+.css-os1ajg {
+    max-width: 900px !important;
+    margin: 0 auto !important;
+}
+
+.flight-details {
+    margin-bottom: 30px;
+}
+
+.outbound, .return {
+    max-width: 900px;
+    margin: 0 auto;
+
+    margin-bottom: 30px;
+}
