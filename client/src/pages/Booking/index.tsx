@@ -35,7 +35,7 @@ interface IBookingForm {
   phone: number;
 }
 
-export const BookingPage: FC = () => {
+const Booking = () => {
   const { handleSubmit, control } = useForm<IBookingForm>();
   const { errors } = useFormState({ control });
   const onSubmit: SubmitHandler<IBookingForm> = (data) => console.log(data);
@@ -184,3 +184,5 @@ export const BookingPage: FC = () => {
     </div>
   );
 };
+
+export default Booking;

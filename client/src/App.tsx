@@ -14,6 +14,7 @@ import Login from "components/Auth/Login";
 import Logout from "components/Auth/Logout";
 
 import Schedules from "pages/Schedules";
+import Booking from "pages/Booking";
 import Profile from "pages/Profile";
 import Users from "pages/Users";
 
@@ -35,7 +36,8 @@ function App() {
           {/* Protected routes (only for authorized users)  */}
           <Route element={<Protected />}>
             <Route path="/schedules" element={<Schedules />} />
-            {/* <Route path="/booking" element={<Booking />} />
+            <Route path="/booking" element={<Booking />} />
+            {/* 
                 <Route path="/tickets" element={<Tickets />} />
                 <Route path="/surveys" element={<Surveys />} /> */}
             <Route path="/profile" element={<Profile />} />
