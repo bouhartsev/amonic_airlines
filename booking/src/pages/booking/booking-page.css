@@ -1,0 +1,30 @@
+.booking-form__form {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.btn-add {
+    max-width: 200px;
+    margin-bottom: 50px !important ;
+}
+
+.css-e13as6-MuiFormControl-root-MuiTextField-root { 
+    display: flex;
+    justify-content: center;
+}
+
+.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input { 
+    padding: 8.5px 14px !important; 
+}
+
+.css-10mzr36-MuiGrid-root>.MuiGrid-item {
+    display: flex;
+    align-items: center;
+    margin-top: 7px;
+}
+
+.css-e13as6-MuiFormControl-root-MuiTextField-root {
+    margin-top: 7px !important;
+    width: 284px !important;
+}
+
