@@ -22,8 +22,8 @@ import {
   phoneValidation,
 } from './validate';
 
-import './booking-page.css';
-import { PassengersList } from './passengers-list';
+import './index.css';
+import { PassengersList } from './PassengersList';
 import { FlightDetails } from './FlightDetails';
 
 interface IBookingForm {

@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 
-import './passengers-list.css';
+import './PassengersList.css';
 
 function createData(
   name: string,
