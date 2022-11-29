@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
-import './FlightDetails.css';
+import Typography from '@mui/material/Typography';
 
-export const FlightDetails: FC = () => {
+const FlightDetails: FC = () => {
   return (
-    <div className="flight-details">
-      <div className="outbound">
-        <p>Outbound flight details</p>
+    <Box display="flex" flexDirection="column">
+      <Box>
+        <Typography variant="subtitle1">Outbound flight details</Typography>
         <Box
           display="flex"
           flexDirection="row"
@@ -14,41 +14,41 @@ export const FlightDetails: FC = () => {
           m="1"
           justifyContent="space-between"
         >
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>From: </p>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">From:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               CAI
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>To: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">To:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               AUH
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>Cabin Type: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">Cabin Type:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               Economy
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>Date: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">Date:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               11/10/2017
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>Flight number: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">Flight number:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               1908
             </Box>
-          </div>
+          </Box>
         </Box>
-      </div>
+      </Box>
 
-      <div className="return">
-        <p>Return flight details</p>
+      <Box>
+        <Typography variant="subtitle1">Return flight details</Typography>
         <Box
           display="flex"
           flexDirection="row"
@@ -56,38 +56,40 @@ export const FlightDetails: FC = () => {
           m="1"
           justifyContent="space-between"
         >
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>From: </p>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">From:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               AUH
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>To: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">To:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               CAI
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>Cabin Type: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">Cabin Type:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               Economy
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>Date: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">Date:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               11/15/2017
             </Box>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p>Flight number: </p>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="subtitle1">Flight number:</Typography>
             <Box fontWeight="fontWeightBold" m={1}>
               1907
             </Box>
-          </div>
+          </Box>
         </Box>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
+
+export default FlightDetails;

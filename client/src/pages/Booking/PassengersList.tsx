@@ -7,9 +7,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-
-import './PassengersList.css';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { makeStyles, withStyles } from '@mui/material';
 
 function createData(
   name: string,
@@ -29,10 +29,12 @@ const rows = [
   createData('Gingerbread', 356, 16.0, 49, 3.9),
 ];
 
-export const PassengersList: FC = () => {
+const PassengersList: FC = () => {
   return (
-    <div className="passengers-list">
-      <p className="passenger-list__title">Passengers list</p>
+    <Box>
+      <Typography sx={{ mt: 5, mb: 2 }} variant="subtitle1">
+        Passengers list
+      </Typography>
 
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -55,11 +57,11 @@ export const PassengersList: FC = () => {
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
-                <TableCell align="right">{row.calories}</TableCell>
-                <TableCell align="right">{row.fat}</TableCell>
-                <TableCell align="right">{row.carbs}</TableCell>
-                <TableCell align="right">{row.protein}</TableCell>
-                <TableCell align="right">{row.fat}</TableCell>
+                <TableCell align="left">{row.calories}</TableCell>
+                <TableCell align="left">{row.fat}</TableCell>
+                <TableCell align="left">{row.carbs}</TableCell>
+                <TableCell align="left">{row.protein}</TableCell>
+                <TableCell align="left">{row.fat}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -71,21 +73,28 @@ export const PassengersList: FC = () => {
         className="btn-add"
         fullWidth={true}
         disableElevation={true}
-        sx={{
-          marginTop: 2,
-        }}
+        sx={{ mt: 3, width: '25%' }}
       >
         Remove passenger
       </Button>
 
-      <div className="btns">
-        <Button variant="contained" color="error">
+      <Box
+        sx={{
+          mt: 3,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Button variant="contained" color="secondary">
           Back to search for flights
         </Button>
-        <Button sx={{marginLeft: 5}} variant="contained" color="success">
+        <Button sx={{ ml: 2 }} variant="contained" color="success">
           Confirm booking
         </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
+
+export default PassengersList;

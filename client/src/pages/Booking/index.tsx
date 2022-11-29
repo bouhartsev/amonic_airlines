@@ -1,13 +1,14 @@
+import React, { FC } from 'react';
 import Typography from '@mui/material/Typography';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
+import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 
-import React, { FC, useState } from 'react';
 import {
   useForm,
   Controller,
@@ -22,9 +23,8 @@ import {
   phoneValidation,
 } from './validate';
 
-import './index.css';
-import { PassengersList } from './PassengersList';
-import { FlightDetails } from './FlightDetails';
+import PassengersList from './PassengersList';
+import FlightDetails from './FlightDetails';
 
 interface IBookingForm {
   firstName: string;
@@ -35,22 +35,28 @@ interface IBookingForm {
   phone: number;
 }
 
-const Booking = () => {
+const Booking: FC = () => {
   const { handleSubmit, control } = useForm<IBookingForm>();
   const { errors } = useFormState({ control });
   const onSubmit: SubmitHandler<IBookingForm> = (data) => console.log(data);
 
   return (
-    <div className="booking-form">
+    <Container maxWidth="lg">
       <Typography variant="h4" sx={{ textAlign: 'center', marginBottom: 5 }}>
         Booking confirmation
       </Typography>
 
       <FlightDetails />
 
-      <form className="booking-form__form" onSubmit={handleSubmit(onSubmit)}>
-        <p className="booking-form__title">Passenger details</p>
-        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Typography sx={{ mt: 5 }} variant="subtitle1">Passenger details</Typography>
+        <Grid
+          container
+          rowSpacing={1}
+          columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+          justifyContent="center"
+          alignItems="center"
+        >
           <Grid item xs={4}>
             <Controller
               control={control}
@@ -58,8 +64,8 @@ const Booking = () => {
               name="firstName"
               render={({ field }) => (
                 <TextField
-                  label="FirstName"
                   size="small"
+                  label="FirstName"
                   margin="normal"
                   fullWidth={true}
                   helperText={errors.firstName?.message}
@@ -95,10 +101,13 @@ const Booking = () => {
               name="birthdate"
               render={({ field }) => (
                 <TextField
+                  size="small"
+                  margin="normal"
+                  fullWidth={true}
                   label="Birthdate"
                   type="date"
                   defaultValue="2017-05-24"
-                  sx={{ width: 220 }}
+                  value={field.value}
                 />
               )}
             />
@@ -128,7 +137,7 @@ const Booking = () => {
               // rules={loginValidation}
               name="passportCountry"
               render={({ field }) => (
-                <FormControl fullWidth>
+                <FormControl fullWidth size="small" margin="normal">
                   <InputLabel id="demo-simple-select-label">
                     Passport country
                   </InputLabel>
@@ -172,16 +181,14 @@ const Booking = () => {
           className="btn-add"
           fullWidth={true}
           disableElevation={true}
-          sx={{
-            marginTop: 2,
-          }}
+          sx={{ width: '25%', mt: 2 }}
         >
           Add passenger
         </Button>
       </form>
 
       <PassengersList />
-    </div>
+    </Container>
   );
 };
 
