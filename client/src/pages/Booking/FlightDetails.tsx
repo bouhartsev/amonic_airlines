@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 
 const FlightDetails: FC = () => {
   return (
-    <Box display="flex" flexDirection="column">
+    <Box display="flex" flexDirection="column" flexWrap="wrap">
       <Box>
         <Typography variant="subtitle1">Outbound flight details</Typography>
         <Box
