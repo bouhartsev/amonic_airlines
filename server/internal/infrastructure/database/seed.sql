@@ -9,7 +9,7 @@
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40103 SET TIME_ZONE='+03:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
@@ -377,6 +377,8 @@ CREATE TABLE `users` (
   `OfficeID` int(11) DEFAULT NULL,
   `Birthdate` date DEFAULT NULL,
   `Active` tinyint(1) DEFAULT NULL,
+  `IncorrectLoginTries` int(2) DEFAULT 0,
+  `NextLoginTime` timestamp DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `FK_Users_Offices` (`OfficeID`),
   KEY `FK_Users_Roles` (`RoleID`),
@@ -391,7 +393,11 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,'j.doe@amonic.com','123','John','Doe',1,'1983-01-13',1),(2,2,'k.omar@amonic.com','4258','Karim','Omar',1,'1980-03-19',1),(3,2,'h.saeed@amonic.com','2020','Hannan','Saeed',3,'1989-12-20',1),(4,2,'a.hobart@amonic.com','6996','Andrew','Hobart',6,'1990-01-30',1),(5,2,'k.anderson@amonic.com','4570','Katrin','Anderson',5,'1992-11-10',1),(6,2,'h.wyrick@amonic.com','1199','Hava','Wyrick',1,'1988-08-08',1),(7,2,'marie.horn@amonic.com','55555','Marie','Horn',4,'1981-04-06',1),(8,2,'m.osteen@amonic.com','9800','Milagros','Osteen',1,'1991-02-03',1);
+INSERT INTO `users` (ID, RoleID, Email, Password, FirstName, LastName, OfficeID, Birthdate, Active)
+VALUES
+    (1,1,'j.doe@amonic.com','123','John','Doe',1,'1983-01-13',1),
+    (2,2,'k.omar@amonic.com','4258','Karim','Omar',1,'1980-03-19',1),
+    (3,2,'h.saeed@amonic.com','2020','Hannan','Saeed',3,'1989-12-20',1),(4,2,'a.hobart@amonic.com','6996','Andrew','Hobart',6,'1990-01-30',1),(5,2,'k.anderson@amonic.com','4570','Katrin','Anderson',5,'1992-11-10',1),(6,2,'h.wyrick@amonic.com','1199','Hava','Wyrick',1,'1988-08-08',1),(7,2,'marie.horn@amonic.com','55555','Marie','Horn',4,'1981-04-06',1),(8,2,'m.osteen@amonic.com','9800','Milagros','Osteen',1,'1991-02-03',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -404,4 +410,36 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-10 23:57:34
+DROP TABLE IF EXISTS `user_logins`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_logins` (
+     `UserID` int(11) NOT NULL,
+     `LoginTime` timestamp NOT NULL,
+     `LogoutTime` timestamp DEFAULT NULL,
+     `ErrorReason` varchar(255) DEFAULT NULL,
+     KEY `FK_Users` (`UserID`),
+     CONSTRAINT `FK_Users` FOREIGN KEY (`UserID`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `reviews`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `reviews` (
+   `ID` int(11) NOT NULL AUTO_INCREMENT,
+   `From` varchar(255) NOT NULL,
+   `To` varchar(255) NOT NULL,
+   `Age` int(4) NOT NULL,
+   `Gender` int(1) NOT NULL,
+   `CabinTypeId` int NOT NULL,
+   `q1` int NOT NULL,
+   `q2` int NOT NULL,
+   `q3` int NOT NULL,
+   `q4` int NOT NULL,
+   `q5` int NOT NULL,
+   `q6` int NOT NULL,
+   `q7` int NOT NULL,
+   `createdAt` datetime NOT NULL default now(),
+   PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;

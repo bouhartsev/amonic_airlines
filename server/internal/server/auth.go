@@ -1,11 +1,13 @@
-package http
+package server
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain"
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain/errdomain"
 	"github.com/bouhartsev/amonic_airlines/server/internal/utils/delivery"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // SignIn godoc
@@ -19,12 +21,12 @@ import (
 // @Accept json
 // @Produce json
 // @Param input body domain.SignInRequest true "JSON input"
-// @Success 201 {object} errdomain.ErrorResponse
+// @Success 200 {object} domain.SignInResponse
 // @Failure 404 {object} errdomain.ErrorResponse
 // @Failure 409 {object} errdomain.ErrorResponse
 // @Failure 500 {object} errdomain.ErrorResponse
 // @Router /api/auth/sign-in [post]
-func (h *handler) SignIn(c *gin.Context) {
+func (s *Server) SignIn(c *gin.Context) {
 	input := new(domain.SignInRequest)
 
 	if err := delivery.ReadJson(c.Request, &input); err != nil {
@@ -32,12 +34,12 @@ func (h *handler) SignIn(c *gin.Context) {
 		return
 	}
 
-	token, err := h.useCase.SignIn(c.Request.Context(), input)
+	response, err := s.core.SignIn(c.Request.Context(), input)
 
 	if err != nil {
 		delivery.ErrorResponse(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, &domain.SignInResponse{Token: *token})
+	c.JSON(http.StatusOK, response)
 }

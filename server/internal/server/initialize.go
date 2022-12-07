@@ -1,35 +1,50 @@
 package server
 
 import (
-	_ "github.com/bouhartsev/amonic_airlines/server/docs"
-	authHandler "github.com/bouhartsev/amonic_airlines/server/internal/auth/delivery/http"
-	authRepository "github.com/bouhartsev/amonic_airlines/server/internal/auth/repository"
-	authUseCase "github.com/bouhartsev/amonic_airlines/server/internal/auth/usecase"
-	userHandler "github.com/bouhartsev/amonic_airlines/server/internal/user/delivery/http"
-	userRepository "github.com/bouhartsev/amonic_airlines/server/internal/user/repository"
-	userUseCase "github.com/bouhartsev/amonic_airlines/server/internal/user/usecase"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/bouhartsev/amonic_airlines/server/docs"
 )
 
-func (s *server) initRoutes() *gin.Engine {
+func (s *Server) initRoutes() *gin.Engine {
 	router := gin.New()
 
 	router.Use(
 		gin.Logger(),
+		CORSMiddleware(),
+		getTokenMiddleware(),
+		s.checkAuthorizationMiddleware(),
 	)
 
 	api := router.Group(`/api`)
 
-	handlers := []EndpointRegistrar{
-		authHandler.NewAuthHandler(authUseCase.NewAuthUseCase(authRepository.NewAuthRepository(s.db), s.logger, s.cfg)),
-		userHandler.NewUserHandler(userUseCase.NewUserUseCase(userRepository.NewUserRepository(s.db), s.logger, s.cfg)),
-	}
+	au := api.Group(`/auth`)
+	au.POST(`/sign-in`, s.SignIn)
 
-	for _, h := range handlers {
-		h.RegisterEndpoints(api)
-	}
+	users := api.Group(`/users`)
+	users.GET(`/`, s.GetUsers)
+	users.POST(`/`, s.CreateUser)
+	users.GET(`/:user_id`, s.GetUser)
+	users.PATCH(`/:user_id`, s.UpdateUser)
+
+	schedules := api.Group(`/schedules`)
+	schedules.GET(`/`, s.GetSchedules)
+	schedules.PATCH(`/:schedule_id`, s.UpdateSchedule)
+	schedules.POST(`/:schedule_id/confirm`, s.ConfirmSchedule)
+	schedules.POST(`/:schedule_id/unconfirm`, s.UnconfirmSchedule)
+
+	api.GET(`/countries`, s.GetCountries)
+	api.GET(`/cabin-types`, s.GetCabinTypes)
+	api.GET(`/airports`, s.GetAirports)
+
+	api.POST(`/tickets`, s.AddTicket)
+
+	reviews := api.Group(`/reviews`)
+
+	reviews.POST(`/`, s.AddReview)
+	reviews.GET(`/brief`, s.GetReviewsBrief)
 
 	// Documentation endpoint registration
 	router.GET(`/api/docs/*any`, ginSwagger.WrapHandler(swaggerFiles.Handler))
