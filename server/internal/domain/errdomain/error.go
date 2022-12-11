@@ -1,9 +1,15 @@
 package errdomain
 
+import (
+	"errors"
+	"fmt"
+)
+
 type ErrorResponse struct {
 	Message string `json:"message"`
 	Type    string `json:"type"`
 	Code    string `json:"code"`
+	Details any    `json:"details,omitempty"`
 }
 
 func (e ErrorResponse) Error() string {
@@ -29,9 +35,16 @@ var (
 )
 
 func NewInternalError(msg string) *ErrorResponse {
+	fmt.Println("ERROR: " + msg)
+
 	return &ErrorResponse{
 		Message: msg,
 		Type:    InternalType,
 		Code:    "internal",
 	}
 }
+
+var (
+	ErrTokenIsNotPresented = errors.New(`token is not presented`)
+	ErrInvalidAccessToken  = errors.New(`invalid access token`)
+)

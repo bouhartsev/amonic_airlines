@@ -1,3 +1,3 @@
-db: root:password@tcp(localhost:3306)/amonic_airlines?parseTime=true
+db: root:password@tcp(database:3306)/amonic_airlines?parseTime=true
 port: :3000
 token_key: qwerty

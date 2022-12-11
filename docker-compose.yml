@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: database
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - golang-docker-data:/var/lib/mysql
+      - ./server/internal/infrastructure/database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    networks:
+      default:
+        aliases:
+          - database
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: amonic_airlines
+
+  server:
+    container_name: server
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    networks:
+      - default
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+
+volumes:
+  golang-docker-data:
