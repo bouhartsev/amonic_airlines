@@ -41,7 +41,7 @@ func (s *Server) checkAuthorizationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		p := c.Request.URL.Path
 
-		if p == `/api/auth/sign-in` {
+		if p == `/api/auth/sign-in` || strings.HasPrefix(p, `/api/docs`) {
 			c.Next()
 			return
 		}
