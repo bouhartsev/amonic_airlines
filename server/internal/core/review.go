@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain"
 )
@@ -144,10 +145,104 @@ func (c *Core) GetReviewsBrief(ctx context.Context, request *domain.GetBriefRevi
 }
 
 func (c *Core) GetDetailedReviews(ctx context.Context, request *domain.GetDetailedReviewsRequest) (*domain.GetDetailedReviewsResponse, error) {
-	return nil, nil
+	q1, err := c.getDetailedReviews(ctx, request, "q1")
+	if err != nil {
+		return nil, err
+	}
+	q2, err := c.getDetailedReviews(ctx, request, "q2")
+	if err != nil {
+		return nil, err
+	}
+	q3, err := c.getDetailedReviews(ctx, request, "q3")
+	if err != nil {
+		return nil, err
+	}
+	q4, err := c.getDetailedReviews(ctx, request, "q4")
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.GetDetailedReviewsResponse{
+		Q1: *q1,
+		Q2: *q2,
+		Q3: *q3,
+		Q4: *q4,
+	}, nil
 }
 
-func getDetailedReview(ctx context.Context, req *domain.GetDetailedReviewsRequest) (*domain.DetailedReview, error) {
+func (c *Core) getDetailedReviews(ctx context.Context, req *domain.GetDetailedReviewsRequest, quest string) (*domain.DetailedReview, error) {
+	q := fmt.Sprintf(`select
+    							count(*) as total,
+    							sum(if(gender = 0, 1, 0)) as male,
+    							sum(if(gender = 1, 1, 0)) as female,
+    							sum(if(age >= 18 and age <= 24, 1, 0)) as a1824,
+    							sum(if(age >= 25 and age <= 39, 1, 0)) as a2539,
+    							sum(if(age >= 40 and age <= 59, 1, 0)) as a4059,
+    							sum(if(age >= 60, 1, 0)) as a60,
+    							sum(if(CabinTypeId = 1, 1, 0)) as economy,
+    							sum(if(CabinTypeId = 2, 1, 0)) as business,
+    							sum(if(CabinTypeId = 3, 1, 0)) as first_class,
+    							sum(if(lower(`+"`To`"+`) = 'auh', 1, 0)) as auh,
+    							sum(if(lower(`+"`To`"+`) = 'bah', 1, 0)) as bah,
+    							sum(if(lower(`+"`To`"+`) = 'doh', 1, 0)) as doh,
+    							sum(if(lower(`+"`To`"+`) = 'ryu', 1, 0)) as ryu,
+    							sum(if(lower(`+"`To`"+`) = 'cai', 1, 0)) as cai,
+								%s
+	                         from reviews
+                             where createdAt >= ? and createdAt <= ? `, quest)
 
-	return nil, nil
+	args := []any{req.From, req.To}
+
+	q += fmt.Sprintf(`group by %s order by %s`, quest, quest)
+
+	r := &domain.DetailedReview{}
+	reviews := make([]domain.DetailedReviewSub, 0, 7)
+
+	rows, err := c.db.QueryContext(ctx, q, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		rev := domain.DetailedReviewSub{}
+		var question string
+
+		err = rows.Scan(
+			&rev.Total,
+			&rev.Gender.Male,
+			&rev.Gender.Female,
+			&rev.Age.R1824,
+			&rev.Age.R2539,
+			&rev.Age.R4059,
+			&rev.Age.R60,
+			&rev.CabinType.Economy,
+			&rev.CabinType.Business,
+			&rev.CabinType.First,
+			&rev.DestinationAirport.AUH,
+			&rev.DestinationAirport.BAH,
+			&rev.DestinationAirport.DOH,
+			&rev.DestinationAirport.RYU,
+			&rev.DestinationAirport.CAI,
+			&question,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		reviews = append(reviews, rev)
+	}
+
+	r.R1 = reviews[0]
+	r.R2 = reviews[1]
+	r.R3 = reviews[2]
+	r.R4 = reviews[3]
+	r.R5 = reviews[4]
+	r.R6 = reviews[5]
+	r.R7 = reviews[6]
+
+	return r, nil
 }

@@ -44,7 +44,8 @@ func (s *Server) initRoutes() *gin.Engine {
 	reviews := api.Group(`/reviews`)
 
 	reviews.POST(`/`, s.AddReview)
-	reviews.GET(`/brief`, s.GetReviewsBrief)
+	reviews.GET(`/brief`, s.GetBriefReviews)
+	reviews.GET(`/detailed`, s.GetDetailedReviews)
 
 	// Documentation endpoint registration
 	router.GET(`/api/docs/*any`, ginSwagger.WrapHandler(swaggerFiles.Handler))
