@@ -13,14 +13,14 @@ import (
 // AddTicket godoc
 // @Summary Добавляет билет.
 // @Description Поле return опционально.
-// @Tags Tickets
+// @Tags  Tickets
 // @Accept json
 // @Produce json
 // @Param input body domain.AddTicketRequest true "JSON input"
 // @Success 201
 // @Failure 400 {object} errdomain.ErrorResponse
 // @Failure 500 {object} errdomain.ErrorResponse
-// @Router /api/users [post]
+// @Router /api/tickets [post]
 func (s *Server) AddTicket(c *gin.Context) {
 	input := new(domain.AddTicketRequest)
 
