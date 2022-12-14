@@ -62,22 +62,44 @@ type GetDetailedReviewsRequest struct {
 }
 
 type GetDetailedReviewsResponse struct {
-	Total int            `json:"total"`
-	Q1    DetailedReview `json:"q1"`
-	Q2    DetailedReview `json:"q2"`
-	Q3    DetailedReview `json:"q3"`
-	Q4    DetailedReview `json:"q4"`
-	Q5    DetailedReview `json:"q5"`
-	Q6    DetailedReview `json:"q6"`
-	Q7    DetailedReview `json:"q7"`
+	Q1 DetailedReview `json:"q1"`
+	Q2 DetailedReview `json:"q2"`
+	Q3 DetailedReview `json:"q3"`
+	Q4 DetailedReview `json:"q4"`
 }
 
 type DetailedReview struct {
-	R1 Review `json:"1"`
-	R2 Review `json:"2"`
-	R3 Review `json:"3"`
-	R4 Review `json:"4"`
-	R5 Review `json:"5"`
-	R6 Review `json:"6"`
-	R7 Review `json:"7"`
+	R1 DetailedReviewSub `json:"1"`
+	R2 DetailedReviewSub `json:"2"`
+	R3 DetailedReviewSub `json:"3"`
+	R4 DetailedReviewSub `json:"4"`
+	R5 DetailedReviewSub `json:"5"`
+	R6 DetailedReviewSub `json:"6"`
+	R7 DetailedReviewSub `json:"7"`
+}
+
+type DetailedReviewSub struct {
+	Total  int `json:"total"`
+	Gender struct {
+		Male   int
+		Female int
+	} `json:"gender"`
+	Age struct {
+		R1824 int `json:"18-24"`
+		R2539 int `json:"25-39"`
+		R4059 int `json:"40-59"`
+		R60   int `json:"60"`
+	} `json:"age"`
+	CabinType struct {
+		Economy  int `json:"economy"`
+		Business int `json:"business"`
+		First    int `json:"first"`
+	} `json:"cabinType"`
+	DestinationAirport struct {
+		AUH int `json:"AUH"`
+		BAH int `json:"BAH"`
+		DOH int `json:"DOH"`
+		RYU int `json:"RYU"`
+		CAI int `json:"CAI"`
+	}
 }
