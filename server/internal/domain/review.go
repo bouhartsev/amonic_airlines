@@ -55,10 +55,8 @@ type GetBriefReviewsResponse struct {
 }
 
 type GetDetailedReviewsRequest struct {
-	From   string `json:"-"`
-	To     string `json:"-"`
-	Age    *int   `json:"-"`
-	Gender *int   `json:"-"`
+	From string `json:"-"`
+	To   string `json:"-"`
 }
 
 type GetDetailedReviewsResponse struct {
