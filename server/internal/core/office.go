@@ -7,7 +7,7 @@ import (
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain/errdomain"
 )
 
-func (c *Core) GetOffices(ctx context.Context, request *domain.GetOfficesRequest) (*domain.GetOfficesResponse, error) {
+func (c *Core) GetOffices(ctx context.Context) (*domain.GetOfficesResponse, error) {
 	rows, err := c.db.QueryContext(ctx, `select id, countryId, title, phone, contact from offices`)
 
 	if err != nil {

@@ -64,3 +64,22 @@ func (s *Server) GetCountries(c *gin.Context) {
 
 	c.JSON(http.StatusOK, cb)
 }
+
+// GetOffices godoc
+// @Summary Возвращает список офисов.
+// @Tags Offices
+// @Accept json
+// @Produce json
+// @Success 200 {object} domain.GetOfficesResponse
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/offices [get]
+func (s *Server) GetOffices(c *gin.Context) {
+	response, err := s.core.GetOffices(c.Request.Context())
+
+	if err != nil {
+		delivery.ErrorResponse(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}

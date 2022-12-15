@@ -8,8 +8,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - golang-docker-data:/var/lib/mysql
-      - ./server/internal/infrastructure/database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+      - mysql-data:/var/lib/mysql
+      - ./server/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       default:
         aliases:
@@ -32,4 +32,4 @@ services:
       - "3000:3000"
 
 volumes:
-  golang-docker-data:
+  mysql-data:

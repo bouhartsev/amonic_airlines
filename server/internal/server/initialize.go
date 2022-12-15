@@ -37,6 +37,7 @@ func (s *Server) initRoutes() *gin.Engine {
 
 	api.GET(`/countries`, s.GetCountries)
 	api.GET(`/cabin-types`, s.GetCabinTypes)
+	api.GET(`/offices`, s.GetOffices)
 	api.GET(`/airports`, s.GetAirports)
 
 	api.POST(`/tickets`, s.AddTicket)

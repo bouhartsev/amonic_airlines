@@ -23,10 +23,15 @@ func getTokenMiddleware() gin.HandlerFunc {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		origin := c.Request.Header.Get("origin")
+		if origin == "" {
+			origin = "*"
+		}
+
+		c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PATCH, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PATCH, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -73,13 +78,11 @@ func (s *Server) checkAuthorizationMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil {
-			fmt.Println("here 1", err.Error())
 			c.AbortWithStatusJSON(http.StatusUnauthorized, errdomain.InvalidAuthTokenError)
 			return
 		}
 
 		if _, ok := token.Claims.(*domain.AuthClaims); !ok && !token.Valid {
-			fmt.Println("here 4")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, errdomain.InvalidAuthTokenError)
 			return
 		}

@@ -9,9 +9,6 @@ type (
 		Contact   *string `json:"contact,omitempty"`
 	}
 
-	GetOfficesRequest struct {
-	}
-
 	GetOfficesResponse struct {
 		Offices []*Office `json:"offices,omitempty"`
 	}
