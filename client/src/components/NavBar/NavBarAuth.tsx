@@ -29,7 +29,7 @@ const NavBar = (props: Props) => {
   const [options] = React.useState(
     [
       "Dashboard",
-      props.role === "Administrator" && "Users",
+      props.role === "administrator" && "Users",
       "Profile",
       "Logout",
     ].filter(Boolean)
@@ -118,7 +118,7 @@ const NavBar = (props: Props) => {
       <Box sx={{ flexGrow: 0 }}>
         <Tooltip title="Open options">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt="User Name" src="/path/to/photo.png" />
+            <Avatar alt={props.role} src="/path/to/photo.png" />
           </IconButton>
         </Tooltip>
         <Menu

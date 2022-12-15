@@ -40,7 +40,7 @@ function App() {
                 <Route path="/surveys" element={<Surveys />} /> */}
             <Route path="/profile" element={<Profile />} />
           </Route>
-          <Route element={<Protected role="Administrator" />}>
+          <Route element={<Protected role="administrator" />}>
             <Route path="/users" element={<Users />} />
           </Route>
 

@@ -2,43 +2,46 @@ import { makeSimpleAutoObservable } from "utils/mobx-extensions"
 import { action } from "mobx";
 import api, { setAuthToken } from "utils/api"
 import BasicStore from "./BasicStore"
+import jwt_decode from "jwt-decode";
 
-type userType = { id: number, name: string, role: "User"|"Administrator" };
+type userType = { id: number, ame: string, role: "office user" | "administrator",  } | undefined;
 
 class UserStore extends BasicStore {
     constructor(...args: any[]) {
         super(...args);
         makeSimpleAutoObservable(this);
-        
-        const currentToken = localStorage.getItem("jwtToken");
-        
-        if (currentToken) {
-            // check if token is Valid
-            this.isLogged = true;
-            setAuthToken(currentToken);
-        }
+
+        const currToken = localStorage.getItem("jwtToken");
+        if (currToken) this.setAuth(currToken);
     }
 
-    isLogged = false;
-    userData = {role: "Administrator"} as userType;
-    users = [] as userType[];
+    isLogged: boolean = false;
+    userData: userType = undefined;
+    users: userType[] = [];
+
+    setAuth = (token: string) => {
+        const tokenData: any = jwt_decode(token);
+        if (Date.now() <= tokenData.exp) return; // check if token is valid
+        this.isLogged = true;
+        setAuthToken(token);
+        this.userData = {...tokenData.user, role: tokenData.user.roleId == 1 ? "administrator" : "office user"};
+    }
 
     login = (username: string, password: string) => {
         this.status = "pending";
 
-        return api.post("/auth/sign-in", { login: username, password })
+        return this.rootStore.fakeStore.newLoginAtt().then(() =>
+            api.post("/auth/sign-in", { login: username, password }))
             .then((response: any) => {
                 this.status = "success";
                 localStorage.setItem("jwtToken", response.data.token);
-                this.isLogged = true;
-                setAuthToken(response.data.token);
-                // get user data
+                this.setAuth(response.data.token);
             })
             .catch((err: any) => {
                 this.status = "error";
-                console.log(err);
+
                 switch (err.response?.data?.code) {
-                    case "invalid_credentials:series":
+                    case "invalid_credentials:series": // пока работает некорректно!!!
                         let tryAfter = 10;
                         this.status = "forbidden";
                         let attemptsTimer = setInterval(action(() => {
@@ -66,6 +69,8 @@ class UserStore extends BasicStore {
     logout = () => {
         // temp
         this.isLogged = false;
+        localStorage.removeItem("jwtToken");
+        setAuthToken();
 
         // return api.post("/auth/sign-out")
         //     .then((response) => {
@@ -80,10 +85,10 @@ class UserStore extends BasicStore {
     getUsers = () => {
         this.status = "pending";
         return api.get("/users")
-        .then((response: any) => {
-            this.status = "success";
-            console.log(response.data);
-        })
+            .then((response: any) => {
+                this.status = "success";
+                console.log(response.data);
+            })
     }
 };
 

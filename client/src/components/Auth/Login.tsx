@@ -19,7 +19,7 @@ const Login = () => {
   const formContext = useForm<Fields>();
 
   if (!!userStore.isLogged) {
-    if (userStore.userData.role === "Administrator")
+    if (userStore.userData?.role === "administrator")
       return <Navigate to="/users" />;
     return <Navigate to="/profile" />;
   }

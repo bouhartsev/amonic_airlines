@@ -10,7 +10,7 @@ const NavBar = () => {
     <AppBar position="sticky">
       <Container maxWidth="xl" disableGutters sx={{p: 3}}>
         <Toolbar disableGutters>
-          {!userStore.isLogged ? <NavBarPublic /> : <NavBarAuth role={userStore.userData.role}/>}
+          {!userStore.isLogged ? <NavBarPublic /> : <NavBarAuth role={userStore.userData?.role}/>}
         </Toolbar>
       </Container>
     </AppBar>
