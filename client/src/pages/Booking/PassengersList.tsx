@@ -77,22 +77,6 @@ const PassengersList: FC = () => {
       >
         Remove passenger
       </Button>
-
-      <Box
-        sx={{
-          mt: 3,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}
-      >
-        <Button variant="contained" color="secondary">
-          Back to search for flights
-        </Button>
-        <Button sx={{ ml: 2 }} variant="contained" color="success">
-          Confirm booking
-        </Button>
-      </Box>
     </Box>
   );
 };
