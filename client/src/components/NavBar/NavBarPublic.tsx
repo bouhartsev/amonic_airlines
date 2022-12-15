@@ -6,7 +6,7 @@ import { Button } from "@mui/material";
 const NavBarPublic = () => {
   return (
     <>
-      <Image path="logo_colors" hasSet/>
+      <a href="/" style={{flexGrow:"1"}}><Image path="logo_colors" hasSet alt="Amonic Airlines Logo" /></a>
       <Button component={LinkRouter} to={"/login"} color="inherit">
         {"Login"}
       </Button>

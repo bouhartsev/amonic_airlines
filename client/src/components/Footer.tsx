@@ -8,7 +8,6 @@ const Footer = () => {
       sx={{
         py: 3,
         px: 2,
-        mt: "auto",
         textAlign: "center",
       }}
     >

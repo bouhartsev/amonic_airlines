@@ -9,8 +9,14 @@ class UserStore extends BasicStore {
     constructor(...args: any[]) {
         super(...args);
         makeSimpleAutoObservable(this);
-        // temp
-        this.isLogged = true;
+        
+        const currentToken = localStorage.getItem("jwtToken");
+        
+        if (currentToken) {
+            // check if token is Valid
+            this.isLogged = true;
+            setAuthToken(currentToken);
+        }
     }
 
     isLogged = false;
@@ -19,21 +25,20 @@ class UserStore extends BasicStore {
 
     login = (username: string, password: string) => {
         this.status = "pending";
-        // temp
-        // this.isLogged = true;
 
-        return this.rootStore.fakeStore.newLoginAtt().then(()=>
-            api.post("/auth/sign-in", { username, password }) )
+        return api.post("/auth/sign-in", { login: username, password })
             .then((response: any) => {
-                this.isLogged = true;
+                this.status = "success";
                 localStorage.setItem("jwtToken", response.data.token);
+                this.isLogged = true;
                 setAuthToken(response.data.token);
                 // get user data
             })
             .catch((err: any) => {
                 this.status = "error";
-                switch (err.code) {
-                    case "AttemptsExceeded":
+                console.log(err);
+                switch (err.response?.data?.code) {
+                    case "invalid_credentials:series":
                         let tryAfter = 10;
                         this.status = "forbidden";
                         let attemptsTimer = setInterval(action(() => {
@@ -50,7 +55,7 @@ class UserStore extends BasicStore {
                         break;
                     case "invalid_credentials":
                     case "user:disabled":
-                        this.error = err.message;
+                        this.error = err.response.data.message;
                         break;
                     default:
                         throw err;
@@ -70,6 +75,15 @@ class UserStore extends BasicStore {
         //         // remove user data
         //     })
         //     .catch((err) => { this.status = "error"; });
+    }
+
+    getUsers = () => {
+        this.status = "pending";
+        return api.get("/users")
+        .then((response: any) => {
+            this.status = "success";
+            console.log(response.data);
+        })
     }
 };
 

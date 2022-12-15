@@ -99,7 +99,7 @@ const NavBar = (props: Props) => {
       >
         <MenuIcon />
       </IconButton>
-      <Image path="logo_colors" hasSet />
+      <a href="/"><Image path="logo_colors" hasSet alt="Amonic Airlines Logo" /></a>
       <Box sx={{ flexGrow: 1, ml: 3, display: { xs: "none", sm: "flex" } }}>
         {pages.map((page) => (
           <Button
