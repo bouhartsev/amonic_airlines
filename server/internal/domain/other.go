@@ -1,10 +1,10 @@
 package domain
 
 type Airport struct {
-	Id        *int    `json:"id,omitempty"`
-	CountryId *int    `json:"countryId,omitempty"`
-	Name      *string `json:"name,omitempty"`
-	IATACode  *string `json:"IATACode,omitempty"`
+	Id        *int    `json:"id,omitempty" example:"10"`
+	CountryId *int    `json:"countryId,omitempty" example:"123"`
+	Name      *string `json:"name,omitempty" example:"Abu Dhabi"`
+	IATACode  *string `json:"IATACode,omitempty" example:"AUH"`
 }
 
 type GetAirportsResponse struct {
@@ -12,8 +12,8 @@ type GetAirportsResponse struct {
 }
 
 type CabinType struct {
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
+	Id   *int    `json:"id,omitempty" example:"3"`
+	Name *string `json:"name,omitempty" example:"First Class"`
 }
 
 type GetCabinTypesResponse struct {
@@ -21,8 +21,8 @@ type GetCabinTypesResponse struct {
 }
 
 type Country struct {
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
+	Id   *int    `json:"id,omitempty" example:"13"`
+	Name *string `json:"name,omitempty" example:"Armenia"`
 }
 
 type GetCountriesResponse struct {

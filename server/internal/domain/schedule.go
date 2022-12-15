@@ -5,16 +5,16 @@ import (
 )
 
 type Schedule struct {
-	Id              *int     `json:"id,omitempty"`
-	Date            *string  `json:"date,omitempty"`
-	Time            *string  `json:"time,omitempty"`
-	From            *string  `json:"from,omitempty"`
-	To              *string  `json:"to,omitempty"`
-	FlightNumber    *int     `json:"flightNumber,omitempty"`
-	Aircraft        *string  `json:"aircraft,omitempty"`
-	EconomyPrice    *float64 `json:"economyPrice,omitempty"`
-	BusinessPrice   *float64 `json:"businessPrice,omitempty"`
-	FirstClassPrice *float64 `json:"firstClassPrice,omitempty"`
+	Id              *int     `json:"id,omitempty" example:"4"`
+	Date            *string  `json:"date,omitempty" example:"2017-12-04"`
+	Time            *string  `json:"time,omitempty" example:"17:00:00"`
+	From            *string  `json:"from,omitempty" example:"AUH"`
+	To              *string  `json:"to,omitempty" example:"DOH"`
+	FlightNumber    *int     `json:"flightNumber,omitempty" example:"49"`
+	Aircraft        *string  `json:"aircraft,omitempty" example:"Boeing 738"`
+	EconomyPrice    *float64 `json:"economyPrice,omitempty" example:"12.25"`
+	BusinessPrice   *float64 `json:"businessPrice,omitempty" example:"30.20"`
+	FirstClassPrice *float64 `json:"firstClassPrice,omitempty" example:"50.0"`
 	Confirmed       *bool    `json:"confirmed,omitempty"`
 }
 
@@ -43,9 +43,9 @@ type GetSchedulesResponse struct {
 
 type UpdateScheduleRequest struct {
 	ScheduleId   int     `json:"-"`
-	Date         *string `json:"date,omitempty"`
-	Time         *string `json:"time,omitempty"`
-	EconomyPrice *string `json:"economyPrice,omitempty"`
+	Date         *string `json:"date,omitempty" example:"2017-12-08"`
+	Time         *string `json:"time,omitempty" example:"17:00:00"`
+	EconomyPrice *string `json:"economyPrice,omitempty" example:"12.25"`
 }
 
 type ConfirmScheduleRequest struct {
