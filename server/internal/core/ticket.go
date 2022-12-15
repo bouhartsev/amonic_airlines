@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"math/rand"
+	"strings"
 
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain"
 )
@@ -57,4 +58,73 @@ func (c *Core) AddTicket(ctx context.Context, request *domain.AddTicketRequest) 
 	)
 
 	return nil
+}
+
+func (c *Core) GetTickets(ctx context.Context, req *domain.GetTicketsRequest) (*domain.GetTicketsResponse, error) {
+	var (
+		args []any
+		vals []string
+	)
+
+	q := `select id, userId, scheduleId, cabinTypeId, firstname, lastname, phone, passportNumber, passportCountryId, bookingReference, confirmed from tickets `
+
+	if req.UserId != nil || req.ScheduleId != nil || req.BookingReference != nil {
+		q += "where "
+	}
+
+	if req.UserId != nil {
+		vals = append(vals, "userId = ?")
+		args = append(args, *req.UserId)
+	}
+	if req.ScheduleId != nil {
+		vals = append(vals, "scheduledId = ? ")
+		args = append(args, *req.ScheduleId)
+	}
+	if req.BookingReference != nil {
+		vals = append(vals, "lower(bookingReference) = lower(?) ")
+		args = append(args, *req.BookingReference)
+	}
+
+	if len(vals) > 0 {
+		s := strings.Join(vals, " AND ")
+		q += s
+	}
+
+	q += " LIMIT 50"
+
+	var tickets []domain.Ticket
+
+	rows, err := c.db.QueryContext(ctx, q, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var t domain.Ticket
+
+		err = rows.Scan(
+			&t.Id,
+			&t.UserId,
+			&t.ScheduleId,
+			&t.CabinTypeId,
+			&t.FirstName,
+			&t.LastName,
+			&t.Phone,
+			&t.PassportNumber,
+			&t.PassportCountryId,
+			&t.BookingReference,
+			&t.Confirmed,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tickets = append(tickets, t)
+	}
+
+	return &domain.GetTicketsResponse{Tickets: tickets}, nil
 }

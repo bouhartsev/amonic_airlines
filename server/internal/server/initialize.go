@@ -48,8 +48,15 @@ func (s *Server) initRoutes() *gin.Engine {
 	api.GET(`cabin-types`, s.GetCabinTypes)
 	api.GET(`offices`, s.GetOffices)
 	api.GET(`airports`, s.GetAirports)
+	api.GET(`amenities`, s.GetAmenities)
 
-	api.POST(`tickets`, s.AddTicket)
+	tickets := api.Group(`tickets`)
+
+	tickets.POST(``, s.AddTicket)
+	tickets.GET(``, s.GetTickets)
+	tickets.GET(`:ticket_id/amenities`, s.GetTicketAmenities)
+	tickets.DELETE(`:ticket_id/amenities`, s.RemoveTicketAmenities)
+	tickets.POST(`:ticket_id/amenities`, s.AddTicketAmenities)
 
 	reviews := api.Group(`reviews`)
 

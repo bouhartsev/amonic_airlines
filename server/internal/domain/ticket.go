@@ -31,3 +31,13 @@ type TicketInfo struct {
 	ScheduleId  int `json:"scheduleId"`
 	CabinTypeId int `json:"cabinTypeId"`
 }
+
+type GetTicketsRequest struct {
+	UserId           *int
+	ScheduleId       *int
+	BookingReference *string
+}
+
+type GetTicketsResponse struct {
+	Tickets []Ticket `json:"tickets"`
+}
