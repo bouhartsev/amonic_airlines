@@ -28,3 +28,25 @@ type AddTicketAmenitiesRequest struct {
 	Amenities []int `json:"amenities" example:"1,110,12345,33,12"`
 	TicketId  int   `json:"-"`
 }
+
+type GetAmenitiesBriefReportRequest struct {
+	DateFrom   *string `json:"-"`
+	DateTo     *string `json:"-"`
+	ScheduleId *int    `json:"-"`
+}
+
+type AmenityReport struct {
+	AmenityId   int    `json:"amenityId" example:"13"`
+	Description string `json:"description" example:"Wi-fi 50mb"`
+	Count       int    `json:"count" example:"60"`
+}
+
+type AmenityBriefReport struct {
+	Reports []AmenityReport `json:"reports"`
+}
+
+type GetAmenitiesBriefReportResponse struct {
+	Economy    AmenityBriefReport `json:"economy"`
+	Business   AmenityBriefReport `json:"business"`
+	FirstClass AmenityBriefReport `json:"firstClass"`
+}

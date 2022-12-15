@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain"
 )
@@ -98,4 +99,113 @@ func (c *Core) AddTicketAmenities(ctx context.Context, req *domain.AddTicketAmen
 	}
 
 	return nil
+}
+
+func (c *Core) GetAmenitiesBriefReport(ctx context.Context, req *domain.GetAmenitiesBriefReportRequest) (*domain.GetAmenitiesBriefReportResponse, error) {
+	where := ""
+	args := make([]any, 0)
+	args = append(args, 1)
+
+	if req.ScheduleId != nil {
+		where += fmt.Sprintf("and t.scheduleId = ?")
+		args = append(args, *req.ScheduleId)
+	}
+	if req.DateFrom != nil {
+		where += fmt.Sprintf("and s.date >= ?")
+		args = append(args, *req.DateFrom)
+	}
+	if req.DateTo != nil {
+		where += fmt.Sprintf("and s.date <= ?")
+		args = append(args, *req.DateTo)
+	}
+
+	q := fmt.Sprintf(`select count(*), a.id, a.service
+		  from amenities a
+		  join amenitiestickets at on at.AmenityID = a.id
+		  join tickets t on at.TicketID = t.ID
+		  join schedules s on t.ScheduleID = s.ID
+		  where t.CabinTypeID = ? %s
+		  group by a.id, a.service, a.price`, where)
+
+	resp := &domain.GetAmenitiesBriefReportResponse{}
+
+	// Economy
+	rows, err := c.db.QueryContext(ctx, q, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var reports []domain.AmenityReport
+
+	for rows.Next() {
+		var r domain.AmenityReport
+
+		err = rows.Scan(
+			&r.Count,
+			&r.AmenityId,
+			&r.Description,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		reports = append(reports, r)
+	}
+
+	resp.Economy.Reports = reports
+
+	// Business
+	args[0] = 2
+	rows, err = c.db.QueryContext(ctx, q, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	reports = make([]domain.AmenityReport, 0)
+
+	for rows.Next() {
+		var r domain.AmenityReport
+
+		err = rows.Scan(
+			&r.Count,
+			&r.AmenityId,
+			&r.Description,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		reports = append(reports, r)
+	}
+
+	resp.Business.Reports = reports
+
+	// First Class
+	args[0] = 3
+	rows, err = c.db.QueryContext(ctx, q, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	reports = make([]domain.AmenityReport, 0)
+
+	for rows.Next() {
+		var r domain.AmenityReport
+
+		err = rows.Scan(
+			&r.Count,
+			&r.AmenityId,
+			&r.Description,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		reports = append(reports, r)
+	}
+
+	resp.FirstClass.Reports = reports
+
+	return resp, nil
 }

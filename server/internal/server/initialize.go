@@ -49,6 +49,7 @@ func (s *Server) initRoutes() *gin.Engine {
 	api.GET(`offices`, s.GetOffices)
 	api.GET(`airports`, s.GetAirports)
 	api.GET(`amenities`, s.GetAmenities)
+	api.GET(`amenities/reports/brief`, s.GetAmenitiesBriefReport)
 
 	tickets := api.Group(`tickets`)
 
