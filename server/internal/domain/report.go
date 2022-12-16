@@ -6,7 +6,7 @@ type TopCustomer struct {
 }
 
 type TopOffice struct {
-	Total int    `json:"place"`
+	Total int    `json:"total"`
 	Name  string `json:"name"`
 }
 
