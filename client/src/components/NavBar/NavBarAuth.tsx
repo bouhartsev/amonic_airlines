@@ -118,7 +118,7 @@ const NavBar = (props: Props) => {
       <Box sx={{ flexGrow: 0 }}>
         <Tooltip title="Open options">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt={props.role} src="/path/to/photo.png" />
+            <Avatar src="/path/to/photo.png" />
           </IconButton>
         </Tooltip>
         <Menu

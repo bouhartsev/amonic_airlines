@@ -4,7 +4,18 @@ import api, { setAuthToken } from "utils/api"
 import BasicStore from "./BasicStore"
 import jwt_decode from "jwt-decode";
 
-type userType = { id: number, ame: string, role: "office user" | "administrator",  } | undefined;
+type userType = {
+    "id": number,
+    "role": "office user" | "administrator",
+    "active": true,
+    "age": number,
+    "birthdate": string,
+    "email": string,
+    "firstName": string,
+    "lastName": string,
+    "officeId": number,
+    "roleId": number
+} | undefined;
 
 class UserStore extends BasicStore {
     constructor(...args: any[]) {
@@ -18,13 +29,18 @@ class UserStore extends BasicStore {
     isLogged: boolean = false;
     userData: userType = undefined;
     users: userType[] = [];
+    offices: any[] = [];
+
+    roleByID = (roleId: number | string) => roleId == 1 ? "administrator" : "office user";
+    officeByID = (officeId: number | string) => this.offices.find((item) => item.id == officeId);
+    userByID = (userId: number | string) => this.users.find((item) => item?.id == userId);
 
     setAuth = (token: string) => {
         const tokenData: any = jwt_decode(token);
         if (Date.now() <= tokenData.exp) return; // check if token is valid
         this.isLogged = true;
         setAuthToken(token);
-        this.userData = {...tokenData.user, role: tokenData.user.roleId == 1 ? "administrator" : "office user"};
+        this.userData = { ...tokenData.user, role: this.roleByID(tokenData.user.roleId) };
     }
 
     login = (username: string, password: string) => {
@@ -33,6 +49,7 @@ class UserStore extends BasicStore {
         return this.rootStore.fakeStore.newLoginAtt().then(() =>
             api.post("/auth/sign-in", { login: username, password }))
             .then((response: any) => {
+                console.log(response.data);
                 this.status = "success";
                 localStorage.setItem("jwtToken", response.data.token);
                 this.setAuth(response.data.token);
@@ -87,8 +104,19 @@ class UserStore extends BasicStore {
         return api.get("/users")
             .then((response: any) => {
                 this.status = "success";
-                console.log(response.data);
+                this.users = response.data.users;//.map((el: any) => ({ ...el, active: false }));
             })
+            .catch((err) => { this.status = "error"; throw err; });
+    }
+
+    getOffices = () => {
+        this.status = "pending";
+        return api.get("/offices")
+            .then((response: any) => {
+                this.status = "success";
+                this.offices = response.data.offices;
+            })
+            .catch((err) => { this.status = "error"; throw err; });
     }
 };
 
