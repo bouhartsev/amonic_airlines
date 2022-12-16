@@ -67,7 +67,7 @@ func (c *Core) GetDetailedReport(ctx context.Context) (*domain.GetDetailedReport
 	resp.TopCustomers.Third = topCustomers[2]
 
 	// number of passengers flying busiest day
-	row = c.db.QueryRowContext(ctx, fmt.Sprintf(`select max(tab.total) as max, tab.Date
+	row = c.db.QueryRowContext(ctx, fmt.Sprintf(`select max(tab.total) as max, DATE_FORMAT(tab.Date, '%Y-%m-%d')
                                                         from(select count(*) as total, s.Date
                                                              from tickets t
                                                              join schedules s on t.ScheduleID = s.ID
@@ -86,7 +86,7 @@ func (c *Core) GetDetailedReport(ctx context.Context) (*domain.GetDetailedReport
 	}
 
 	// number of passengers flying most quiet day
-	row = c.db.QueryRowContext(ctx, fmt.Sprintf(`select min(tab.total) as min, tab.Date
+	row = c.db.QueryRowContext(ctx, fmt.Sprintf(`select min(tab.total) as min, DATE_FORMAT(tab.Date, '%Y-%m-%d')
                                                         from(select count(*) as total, s.Date
                                                              from tickets t
                                                              join schedules s on t.ScheduleID = s.ID
