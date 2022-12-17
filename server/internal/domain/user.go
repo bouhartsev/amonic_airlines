@@ -10,7 +10,7 @@ type User struct {
 	FirstName           *string    `json:"firstName,omitempty" example:"Alex"`
 	LastName            *string    `json:"lastName,omitempty" example:"Herbarien"`
 	OfficeId            *int       `json:"officeId,omitempty" example:"20"`
-	Birthdate           *time.Time `json:"birthdate,omitempty" example:"2017-12-04 17:00:00"`
+	Birthdate           *time.Time `json:"birthdate,omitempty" example:"2017-12-31"`
 	Age                 *int       `json:"age,omitempty" example:"30"`
 	Active              *bool      `json:"active,omitempty"`
 	IncorrectLoginTries *int       `json:"-"`
@@ -22,7 +22,7 @@ type CreateUserRequest struct {
 	FirstName string    `json:"firstName,omitempty" example:"Alex"`
 	LastName  string    `json:"lastName,omitempty" example:"Herbarien"`
 	OfficeId  int       `json:"officeId,omitempty" example:"20"`
-	Birthdate time.Time `json:"birthdate,omitempty" example:"2017-12-04 17:00:00"`
+	Birthdate time.Time `json:"birthdate,omitempty" example:"2017-12-31"`
 	Password  string    `json:"password,omitempty" example:"renatikadik22"`
 }
 
@@ -53,4 +53,16 @@ type UpdateUserRequest struct {
 	FirstName *string `json:"firstName,omitempty" example:"Alex"`
 	LastName  *string `json:"lastName,omitempty" example:"Herbarien"`
 	OfficeId  *int    `json:"officeId,omitempty" example:"20"`
+}
+
+type UserLogin struct {
+	TimeSpent  string `json:"timeSpent" example:"17:00:00"`
+	LoginTime  string `json:"loginTime" example:"2017-12-31 17:00"`
+	LogoutTime string `json:"logoutTime" example:"2017-12-31 17:00"`
+	Error      string `json:"error" example:"New login detected without logout"`
+}
+
+type GetUserLoginsResponse struct {
+	UserLogins      []UserLogin `json:"userLogins"`
+	NumberOfCrashes int         `json:"numberOfCrashes" example:"3"`
 }

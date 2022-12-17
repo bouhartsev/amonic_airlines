@@ -31,12 +31,15 @@ func (s *Server) initRoutes() *gin.Engine {
 
 	au := api.Group(`auth`)
 	au.POST(`sign-in`, s.SignIn)
+	au.POST(`sign-out`, s.SignOut)
+	au.POST(`report`, s.ReportLastLogoutError)
 
 	users := api.Group(`users`)
 	users.GET(``, s.GetUsers)
 	users.POST(``, s.CreateUser)
 	users.GET(`:user_id`, s.GetUser)
 	users.PATCH(`:user_id`, s.UpdateUser)
+	users.GET(`:user_id/logins`, s.GetUserLogins)
 
 	schedules := api.Group(`schedules`)
 	schedules.GET(``, s.GetSchedules)

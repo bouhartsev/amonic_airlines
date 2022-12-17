@@ -174,3 +174,41 @@ func (c *Core) UpdateUser(ctx context.Context, request *domain.UpdateUserRequest
 
 	return nil
 }
+
+func (c *Core) GetUserLogins(ctx context.Context, id int) (*domain.GetUserLoginsResponse, error) {
+	rows, err := c.db.QueryContext(ctx, `select DATE_FORMAT(loginTime, "%Y-%m-%d %h:%i"), COALESCE(DATE_FORMAT(logoutTime, "%Y-%m-%d %h:%i"), ''), COALESCE(TIMEDIFF(logoutTime, loginTime), ''), COALESCE(errorReason, '')
+                                               from user_logins where userId = ?
+                                               order by loginTime desc`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var logins []domain.UserLogin
+
+	for rows.Next() {
+		var login domain.UserLogin
+		if err = rows.Scan(
+			&login.LoginTime,
+			&login.LogoutTime,
+			&login.TimeSpent,
+			&login.Error,
+		); err != nil {
+			return nil, err
+		}
+
+		logins = append(logins, login)
+	}
+
+	resp := &domain.GetUserLoginsResponse{UserLogins: logins}
+
+	var crashes int
+	err = c.db.QueryRowContext(ctx, "select count(*) from `user_logins` where logoutTime is null and errorReason is not null").Scan(&crashes)
+	if err != nil {
+		return nil, err
+	}
+
+	resp.NumberOfCrashes = crashes
+
+	return resp, nil
+}

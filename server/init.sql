@@ -414,10 +414,12 @@ DROP TABLE IF EXISTS `user_logins`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_logins` (
+     `ID` int(11) NOT NULL AUTO_INCREMENT,
      `UserID` int(11) NOT NULL,
-     `LoginTime` timestamp NOT NULL,
+     `LoginTime` timestamp NOT NULL DEFAULT NOW(),
      `LogoutTime` timestamp DEFAULT NULL,
      `ErrorReason` varchar(255) DEFAULT NULL,
+     PRIMARY KEY (`ID`),
      KEY `FK_Users` (`UserID`),
      CONSTRAINT `FK_Users` FOREIGN KEY (`UserID`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

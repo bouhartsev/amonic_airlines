@@ -32,6 +32,12 @@ var (
 		Type:    InvalidRequestType,
 		Code:    "invalid_credentials",
 	}
+
+	NoActiveLoginsDetectedError = &ErrorResponse{
+		Message: "No active logins detected.",
+		Type:    InvalidRequestType,
+		Code:    "no_active_logins",
+	}
 )
 
 func NewInternalError(msg string) *ErrorResponse {

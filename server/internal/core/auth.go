@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -96,15 +97,81 @@ func (c *Core) SignIn(ctx context.Context, request *domain.SignInRequest) (*doma
 		return nil, errdomain.NewInternalError(err.Error())
 	}
 
-	go func(db *sql.DB, id int) {
-		_, err = c.db.ExecContext(ctx, `update users set NextLoginTime = NULL, IncorrectLoginTries = 0 where id = ?`, id)
+	_, err = c.db.ExecContext(ctx, `update users set NextLoginTime = NULL, IncorrectLoginTries = 0 where id = ?`, user.Id)
+	if err != nil {
+		return nil, err
+	}
 
-		if err != nil {
-			c.logger.Error(err.Error())
+	var loginId int
+	err = c.db.QueryRowContext(ctx, "select id from `user_logins` where userId = ? and logoutTime IS NULL and errorReason IS NULL order by loginTime desc limit 1", user.Id).Scan(&loginId)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return nil, err
+	}
+
+	_, err = c.db.ExecContext(ctx, "update `user_logins` set errorReason = ? where id = ?", "New login detected without logout", loginId)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = c.db.ExecContext(ctx, "insert into `user_logins`(userId) values(?)", user.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.SignInResponse{Token: token, User: user}, nil
+}
+
+func (c *Core) SignOut(ctx context.Context) error {
+	token, err := c.GetTokenFromContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	var lastUserLoginId int
+	err = c.db.QueryRowContext(ctx, "select id from `user_logins` where userId = ? and logoutTime IS NULL and errorReason IS NULL", token.User.Id).Scan(&lastUserLoginId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return errdomain.NoActiveLoginsDetectedError
 		}
-	}(c.db, *user.Id)
+		return err
+	}
 
-	return &domain.SignInResponse{Token: token}, nil
+	_, err = c.db.ExecContext(ctx, "update `user_logins` set logoutTime = NOW() where id = ?", lastUserLoginId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Core) ReportLastLogoutError(ctx context.Context, req *domain.ReportLastLogoutErrorRequest) error {
+	token, err := c.GetTokenFromContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	var message string
+
+	if req.Reason != "" {
+		message = req.Reason
+	} else if req.SoftwareCrash {
+		message = "Software crash"
+	} else {
+		message = "System crash"
+	}
+
+	var lastLogoutId int
+	err = c.db.QueryRowContext(ctx, "select id from `user_logins` where userId = ? and logoutTime IS NULL limit 1", token.User.Id).Scan(&lastLogoutId)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.db.ExecContext(ctx, "update `user_logins` set errorReason = ? where id = ?", message, lastLogoutId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Core) GetTokenFromContext(ctx context.Context) (*domain.AuthClaims, error) {
@@ -115,10 +182,11 @@ func (c *Core) GetTokenFromContext(ctx context.Context) (*domain.AuthClaims, err
 	}
 
 	accessToken, ok := ctxToken.(string)
-
 	if !ok {
 		return nil, errdomain.ErrInvalidAccessToken
 	}
+
+	accessToken = strings.Split(accessToken, "Bearer ")[1]
 
 	token, err := jwt.ParseWithClaims(accessToken, &domain.AuthClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -133,6 +201,7 @@ func (c *Core) GetTokenFromContext(ctx context.Context) (*domain.AuthClaims, err
 	}
 
 	if claims, ok := token.Claims.(*domain.AuthClaims); ok && token.Valid {
+		claims.RawToken = accessToken
 		return claims, nil
 	}
 

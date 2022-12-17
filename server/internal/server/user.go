@@ -46,6 +46,7 @@ func (s *Server) CreateUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param officeId query int false "Фильтрация по офису, к которому принадлежат пользователи"
+// @Success 200 {object} domain.GetUsersResponse
 // @Failure 500 {object} errdomain.ErrorResponse
 // @Router /api/users [get]
 func (s *Server) GetUsers(c *gin.Context) {
@@ -143,4 +144,27 @@ func (s *Server) UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+// GetUserLogins godoc
+// @Summary Возвращает список логинов пользователя.
+// @Description Можно запросить список логинов только для одного пользователя.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user_id path int true "Id пользователя, для которого запрашиваются логины"
+// @Success 200 {object} domain.GetUserLoginsResponse
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/users/:user_id/logins [get]
+func (s *Server) GetUserLogins(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("user_id"))
+
+	users, err := s.core.GetUserLogins(c.Request.Context(), id)
+
+	if err != nil {
+		delivery.ErrorResponse(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, users)
 }
