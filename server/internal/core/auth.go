@@ -85,7 +85,7 @@ func (c *Core) SignIn(ctx context.Context, request *domain.SignInRequest) (*doma
 
 	claims := domain.AuthClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 30)), // 30 days
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)), // 30 days
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 		User: &user,
@@ -98,17 +98,6 @@ func (c *Core) SignIn(ctx context.Context, request *domain.SignInRequest) (*doma
 	}
 
 	_, err = c.db.ExecContext(ctx, `update users set NextLoginTime = NULL, IncorrectLoginTries = 0 where id = ?`, user.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	var loginId int
-	err = c.db.QueryRowContext(ctx, "select id from `user_logins` where userId = ? and logoutTime IS NULL and errorReason IS NULL order by loginTime desc limit 1", user.Id).Scan(&loginId)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, err
-	}
-
-	_, err = c.db.ExecContext(ctx, "update `user_logins` set errorReason = ? where id = ?", "New login detected without logout", loginId)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +125,7 @@ func (c *Core) SignOut(ctx context.Context) error {
 		return err
 	}
 
-	_, err = c.db.ExecContext(ctx, "update `user_logins` set logoutTime = NOW() where id = ?", lastUserLoginId)
+	_, err = c.db.ExecContext(ctx, "update `user_logins` set logoutTime = NOW(), confirmed = true where id = ?", lastUserLoginId)
 	if err != nil {
 		return err
 	}
@@ -161,12 +150,15 @@ func (c *Core) ReportLastLogoutError(ctx context.Context, req *domain.ReportLast
 	}
 
 	var lastLogoutId int
-	err = c.db.QueryRowContext(ctx, "select id from `user_logins` where userId = ? and logoutTime IS NULL limit 1", token.User.Id).Scan(&lastLogoutId)
+	err = c.db.QueryRowContext(ctx, "select id from `user_logins` where userId = ? and logoutTime IS NULL and confirmed = false order by loginTime desc limit 1 offset 1", token.User.Id).Scan(&lastLogoutId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return errors.New("nothing to report")
+		}
 		return err
 	}
 
-	_, err = c.db.ExecContext(ctx, "update `user_logins` set errorReason = ? where id = ?", message, lastLogoutId)
+	_, err = c.db.ExecContext(ctx, "update `user_logins` set errorReason = ?, confirmed = true where id = ?", message, lastLogoutId)
 	if err != nil {
 		return err
 	}
@@ -206,4 +198,22 @@ func (c *Core) GetTokenFromContext(ctx context.Context) (*domain.AuthClaims, err
 	}
 
 	return nil, errdomain.ErrInvalidAccessToken
+}
+
+func (c *Core) SetExpiredTokenError(ctx context.Context, userId int) error {
+	var loginId int
+	err := c.db.QueryRowContext(ctx, "select id from user_logins where userId = ? and logoutTime is null and errorReason is null order by loginTime desc limit 1", userId).Scan(&loginId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return err
+	}
+
+	_, err = c.db.ExecContext(ctx, "update user_logins set errorReason = ?, confirmed = true where id = ?", "Expired auth token", loginId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

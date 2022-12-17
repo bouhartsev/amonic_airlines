@@ -56,13 +56,14 @@ type UpdateUserRequest struct {
 }
 
 type UserLogin struct {
-	TimeSpent  string `json:"timeSpent" example:"17:00:00"`
-	LoginTime  string `json:"loginTime" example:"2017-12-31 17:00"`
-	LogoutTime string `json:"logoutTime" example:"2017-12-31 17:00"`
-	Error      string `json:"error" example:"New login detected without logout"`
+	TimeSpent  *string `json:"timeSpent" example:"17:00:00"`
+	LoginTime  string  `json:"loginTime" example:"2017-12-31 17:00"`
+	LogoutTime *string `json:"logoutTime" example:"2017-12-31 17:00"`
+	Error      *string `json:"error" example:"New login detected without logout"`
 }
 
 type GetUserLoginsResponse struct {
-	UserLogins      []UserLogin `json:"userLogins"`
-	NumberOfCrashes int         `json:"numberOfCrashes" example:"3"`
+	UserLogins             []UserLogin `json:"userLogins"`
+	LastLoginErrorDatetime *string     `json:"LastLoginErrorDatetime" example:"2017-12-31 17:00"`
+	NumberOfCrashes        int         `json:"numberOfCrashes" example:"3"`
 }

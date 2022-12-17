@@ -419,6 +419,7 @@ CREATE TABLE `user_logins` (
      `LoginTime` timestamp NOT NULL DEFAULT NOW(),
      `LogoutTime` timestamp DEFAULT NULL,
      `ErrorReason` varchar(255) DEFAULT NULL,
+     `Confirmed` boolean DEFAULT FALSE,
      PRIMARY KEY (`ID`),
      KEY `FK_Users` (`UserID`),
      CONSTRAINT `FK_Users` FOREIGN KEY (`UserID`) REFERENCES `users` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION

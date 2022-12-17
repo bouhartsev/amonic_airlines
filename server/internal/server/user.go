@@ -155,7 +155,7 @@ func (s *Server) UpdateUser(c *gin.Context) {
 // @Param user_id path int true "Id пользователя, для которого запрашиваются логины"
 // @Success 200 {object} domain.GetUserLoginsResponse
 // @Failure 500 {object} errdomain.ErrorResponse
-// @Router /api/users/:user_id/logins [get]
+// @Router /api/users/{user_id}/logins [get]
 func (s *Server) GetUserLogins(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("user_id"))
 

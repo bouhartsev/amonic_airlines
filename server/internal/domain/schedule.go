@@ -42,10 +42,10 @@ type GetSchedulesResponse struct {
 }
 
 type UpdateScheduleRequest struct {
-	ScheduleId   int     `json:"-"`
-	Date         *string `json:"date,omitempty" example:"2017-12-08"`
-	Time         *string `json:"time,omitempty" example:"17:00:00"`
-	EconomyPrice *string `json:"economyPrice,omitempty" example:"12.25"`
+	ScheduleId   int      `json:"-"`
+	Date         *string  `json:"date,omitempty" example:"2017-12-08"`
+	Time         *string  `json:"time,omitempty" example:"17:00:00"`
+	EconomyPrice *float32 `json:"economyPrice,omitempty" example:"12.25"`
 }
 
 type ConfirmScheduleRequest struct {

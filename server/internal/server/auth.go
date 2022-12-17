@@ -71,6 +71,7 @@ func (s *Server) SignOut(c *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
+// @Param input body domain.ReportLastLogoutErrorRequest true "JSON input"
 // @Success 200
 // @Failure 400 {object} errdomain.ErrorResponse
 // @Failure 500 {object} errdomain.ErrorResponse

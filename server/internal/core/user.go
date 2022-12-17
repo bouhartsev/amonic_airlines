@@ -176,8 +176,8 @@ func (c *Core) UpdateUser(ctx context.Context, request *domain.UpdateUserRequest
 }
 
 func (c *Core) GetUserLogins(ctx context.Context, id int) (*domain.GetUserLoginsResponse, error) {
-	rows, err := c.db.QueryContext(ctx, `select DATE_FORMAT(loginTime, "%Y-%m-%d %h:%i"), COALESCE(DATE_FORMAT(logoutTime, "%Y-%m-%d %h:%i"), ''), COALESCE(TIMEDIFF(logoutTime, loginTime), ''), COALESCE(errorReason, '')
-                                               from user_logins where userId = ?
+	rows, err := c.db.QueryContext(ctx, `select DATE_FORMAT(loginTime, "%Y-%m-%d %H:%i"), DATE_FORMAT(logoutTime, "%Y-%m-%d %H:%i"), TIMEDIFF(logoutTime, loginTime), errorReason
+                                               from user_logins where userId = ? and loginTime > date_sub(now(), interval 30 day)
                                                order by loginTime desc`, id)
 	if err != nil {
 		return nil, err
@@ -202,13 +202,19 @@ func (c *Core) GetUserLogins(ctx context.Context, id int) (*domain.GetUserLogins
 
 	resp := &domain.GetUserLoginsResponse{UserLogins: logins}
 
-	var crashes int
-	err = c.db.QueryRowContext(ctx, "select count(*) from `user_logins` where logoutTime is null and errorReason is not null").Scan(&crashes)
-	if err != nil {
-		return nil, err
-	}
+	if len(logins) > 0 {
+		var crashes int
+		err = c.db.QueryRowContext(ctx, "select count(*) from `user_logins` where userId = ? and errorReason is not null and loginTime > date_sub(now(), interval 30 day)", id).Scan(&crashes)
+		if err != nil {
+			return nil, err
+		}
+		resp.NumberOfCrashes = crashes
 
-	resp.NumberOfCrashes = crashes
+		err = c.db.QueryRowContext(ctx, "select DATE_FORMAT(loginTime, \"%Y-%m-%d %H:%i\") from user_logins where userId = ? and logoutTime is null and confirmed = false and errorReason is not null and loginTime > date_sub(now(), interval 30 day) order by loginTime desc limit 1", id).Scan(&resp.LastLoginErrorDatetime)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return nil, err
+		}
+	}
 
 	return resp, nil
 }

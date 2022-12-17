@@ -2,12 +2,13 @@ package server
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"go.uber.org/zap"
 
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain"
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain/errdomain"
@@ -49,19 +50,24 @@ func (s *Server) checkAuthorizationMiddleware() gin.HandlerFunc {
 		claims := &domain.AuthClaims{}
 
 		token, err := jwt.ParseWithClaims(accessToken, claims, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-
 			return []byte(s.cfg.TokenKey), nil
 		})
 
-		if err != nil {
+		if _, ok := token.Claims.(*domain.AuthClaims); !ok {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, errdomain.InvalidAuthTokenError)
 			return
 		}
 
-		if _, ok := token.Claims.(*domain.AuthClaims); !ok && !token.Valid {
+		if err != nil {
+			if errors.Is(err, jwt.ErrTokenExpired) {
+				err := s.core.SetExpiredTokenError(c.Request.Context(), *claims.User.Id)
+				if err != nil {
+					s.logger.Error("Failed to set token as expired", zap.Error(err))
+				}
+
+				c.AbortWithStatusJSON(http.StatusUnauthorized, errdomain.AuthTokenExpiredError)
+				return
+			}
 			c.AbortWithStatusJSON(http.StatusUnauthorized, errdomain.InvalidAuthTokenError)
 			return
 		}
