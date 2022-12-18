@@ -142,3 +142,35 @@ func (s *Server) UpdateSchedule(c *gin.Context) {
 
 	c.Status(http.StatusOK)
 }
+
+// UpdateSchedulesFromFile godoc
+// @Summary Получает данные для изменений из файла, парсит и применяет их.
+// @Tags Schedules
+// @Accept multipart/form-data
+// @Produce json
+// @Param input formData file true "Файл со списком изменений"
+// @Success 200
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/schedules/upload [post]
+func (s *Server) UpdateSchedulesFromFile(c *gin.Context) {
+	fileHeader, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &errdomain.ErrorResponse{
+			Message: err.Error(),
+			Type:    errdomain.InvalidRequestType,
+		})
+		return
+	}
+
+	file, err := fileHeader.Open()
+	defer file.Close()
+
+	response, err := s.core.UpdateSchedulesFromFile(c.Request.Context(), file)
+
+	if err != nil {
+		delivery.ErrorResponse(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}

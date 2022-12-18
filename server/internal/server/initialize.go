@@ -46,6 +46,7 @@ func (s *Server) initRoutes() *gin.Engine {
 	schedules.PATCH(`:schedule_id`, s.UpdateSchedule)
 	schedules.POST(`:schedule_id/confirm`, s.ConfirmSchedule)
 	schedules.POST(`:schedule_id/unconfirm`, s.UnconfirmSchedule)
+	schedules.POST(`/upload`, s.UpdateSchedulesFromFile)
 
 	api.GET(`countries`, s.GetCountries)
 	api.GET(`cabin-types`, s.GetCabinTypes)

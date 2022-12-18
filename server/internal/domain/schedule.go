@@ -55,3 +55,21 @@ type ConfirmScheduleRequest struct {
 type UnconfirmScheduleRequest struct {
 	ScheduleId int `json:"-"`
 }
+
+type UpdateSchedulesFromFileResponse struct {
+	SuccessfulChangesApplied         int `json:"successfulChangesApplied" example:"33"`
+	DuplicateRecordsDiscarded        int `json:"duplicateRecordsDiscarded" example:"2"`
+	RecordWithMissingFieldsDiscarded int `json:"recordWithMissingFieldsDiscarded" example:"10"`
+}
+
+type ScheduleAction struct {
+	Action       string
+	Date         string
+	Time         string
+	FlightNumber string
+	From         string
+	To           string
+	Aircraft     string
+	Price        string
+	Confirmed    string
+}
