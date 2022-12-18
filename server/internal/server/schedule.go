@@ -149,7 +149,7 @@ func (s *Server) UpdateSchedule(c *gin.Context) {
 // @Accept multipart/form-data
 // @Produce json
 // @Param input formData file true "Файл со списком изменений"
-// @Success 200
+// @Success 200 {object} domain.UpdateSchedulesFromFileResponse
 // @Failure 500 {object} errdomain.ErrorResponse
 // @Router /api/schedules/upload [post]
 func (s *Server) UpdateSchedulesFromFile(c *gin.Context) {
