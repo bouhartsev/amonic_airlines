@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -7,6 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Paper,
+  dialogClasses,
   Typography,
 } from "@mui/material";
 import {
@@ -27,9 +29,7 @@ import { useStore } from "stores";
 import { userType, roles } from "stores/UserStore";
 import styles from "./index.module.css";
 
-const rolesObj = roles
-  .map((el, ind) => ({ id: (ind + 1).toString(), label: el }))
-  .reverse();
+const rolesObj = roles.map((el, ind) => ({ id: ind + 1, label: el })).reverse();
 
 type Props = {
   model: DialogModelType;
@@ -37,19 +37,29 @@ type Props = {
   handleClose: VoidFunction;
 };
 
+// const FormContainer = (props) => {
+
+// }
+
 const UserForm = (props: Props) => {
   const { userStore } = useStore();
-  const currentUser =
-    props.model === "change" && !!props.userId
-      ? userStore.userByID(props.userId)
-      : { roleId: rolesObj[0].id };
-  const formContext = useForm<userType>({
-    defaultValues: currentUser, // doesn't work yet
-  });
+  const formContext = useForm<userType>();
 
+  useEffect(() => {
+    const currentUser =
+      props.model === "change" && !!props.userId
+        ? userStore.userByID(props.userId)
+        : { roleId: rolesObj[0].id };
 
-  const handleSubmit = () => {
+    console.log({ ...currentUser });
+    formContext.reset(currentUser);
+
+    return () => {};
+  }, [userStore, formContext, props.userId, props.model]);
+
+  const handleSubmit = (data: userType) => {
     // userStore
+    console.log(data);
   };
   const handleClose = () => {
     formContext.reset({});
@@ -58,25 +68,27 @@ const UserForm = (props: Props) => {
 
   return (
     <>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <FormContainer formContext={formContext} onSuccess={handleSubmit}>
-          <Dialog open={!!props.model} onClose={handleClose}>
-            <DialogTitle>
-              {props.model === "change" ? "Change role" : "Add user"}
-              <IconButton
-                aria-label="close"
-                onClick={handleClose}
-                sx={{
-                  position: "absolute",
-                  right: 8,
-                  top: 8,
-                  color: (theme) => theme.palette.grey[500],
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </DialogTitle>
-            <DialogContent>
+      <Dialog open={!!props.model} onClose={handleClose}>
+        {/*  PaperComponent={({children})=>{return <FormContainer formContext={formContext} onSuccess={handleSubmit}><Paper>{children}</Paper></FormContainer>}} */}
+        <DialogTitle>
+          {props.model === "change" ? "Change role" : "Add user"}
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <FormContainer formContext={formContext} onSuccess={handleSubmit}>
               <TextFieldElement
                 required
                 disabled={props.model !== "add"}
@@ -106,6 +118,7 @@ const UserForm = (props: Props) => {
               />
               <AutocompleteElement
                 required
+                matchId
                 name="officeId"
                 label="Office"
                 textFieldProps={{ margin: "normal" }}
@@ -115,7 +128,7 @@ const UserForm = (props: Props) => {
                 }}
                 options={userStore.offices}
               />
-              <Box className={props.model === "add" ? "" : styles.hidden}>
+              <Box>
                 <DatePickerElement
                   required
                   name="birthdate"
@@ -139,25 +152,23 @@ const UserForm = (props: Props) => {
                   options={rolesObj}
                 />
               </Box>
-            </DialogContent>
-            <DialogActions sx={{ mx: 2 }}>
-              <Button type="submit" variant="contained" fullWidth>
-                Save
-              </Button>
-              <Button
-                type="reset"
-                onClick={handleClose}
-                variant="contained"
-                color="warning"
-              >
-                Cancel
-              </Button>
-              {/* <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Subscribe</Button> */}
-            </DialogActions>
-          </Dialog>
-        </FormContainer>
-      </LocalizationProvider>
+              <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+                <Button type="submit" variant="contained" fullWidth>
+                  Save
+                </Button>
+                <Button
+                  type="reset"
+                  onClick={handleClose}
+                  variant="contained"
+                  color="warning"
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </FormContainer>
+          </LocalizationProvider>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

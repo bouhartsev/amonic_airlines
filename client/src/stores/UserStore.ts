@@ -16,7 +16,7 @@ export type userType = {
     email: string,
     firstName: string,
     lastName: string,
-    officeId: number,
+    officeId: number | string,
     roleId: number | string,
 };
 
@@ -51,8 +51,7 @@ class UserStore extends BasicStore {
     login = (username: string, password: string) => {
         this.status = "pending";
 
-        return this.rootStore.fakeStore.newLoginAtt().then(() =>
-            api.post("/auth/sign-in", { login: username, password }))
+        return api.post("/auth/sign-in", { login: username, password })
             .then((response: any) => {
                 this.status = "success";
                 localStorage.setItem("jwtToken", response.data.token);
@@ -62,12 +61,14 @@ class UserStore extends BasicStore {
                 this.status = "error";
 
                 switch (err.response?.data?.code) {
-                    case "invalid_credentials:series": // working wrong yet!!!
-                        let tryAfter = 10;
+                    case "invalid_credentials:series": // not exactly correct on backend
+                        console.log(err.response.data)
                         this.status = "forbidden";
+                        let nextTry = new Date(err.response.data.details?.NextTry).getTime();
                         let attemptsTimer = setInterval(action(() => {
-                            this.error = `You entered the credentials incorrectly 3 times. Next attempt after ${tryAfter--} seconds.`
-                            if (tryAfter === 0) {
+                            let tryAfter = Math.ceil((nextTry - Date.now())/1000);
+                            this.error = `You entered the credentials incorrectly 3 times. Next attempt after ${tryAfter} seconds.`
+                            if (tryAfter <= 0) {
                                 clearInterval(attemptsTimer);
                                 this.rootStore.fakeStore.resetLoginAtt();
                                 if (this.status === "error" || this.status === "forbidden") {
