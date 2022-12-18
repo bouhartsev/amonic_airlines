@@ -25,7 +25,7 @@ function App() {
     <>
       <CssBaseline />
       <NavBar />
-      <Container maxWidth="xl" component="main" sx={{ mt: 3 }}>
+      <Container maxWidth="xl" component="main" sx={{ mt: 4 }}>
         <ErrorBoundary key={path}>
         <Routes>
           <Route path="/" element={<Home />} />

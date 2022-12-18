@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import {
   DataGrid,
@@ -6,30 +6,16 @@ import {
   GridValueGetterParams,
   GridToolbarContainer,
   GridSelectionModel,
-  GridRowParams
+  GridRowParams,
 } from "@mui/x-data-grid";
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
 import UserForm from "./UserForm";
-import UserStore from "stores/UserStore";
+import { roleByID } from "stores/UserStore";
+
+export type DialogModelType = "add" | "change" | undefined;
 
 type Props = {};
-
-// function CustomToolbar() {
-//   return (
-//     <GridToolbarContainer sx={{ justifyContent: "space-between" }}>
-//       {/* <GridToolbarColumnsButton /> */}
-//       <Button>Add</Button>
-//       <Typography align="center" variant="h5">
-//         Users
-//       </Typography>
-//       <Box display={}>
-//         <Button color="warning">Change role</Button>
-//         <Button color={}>Disable</Button>
-//       </Box>
-//     </GridToolbarContainer>
-//   );
-// }
 
 const Users = (props: Props) => {
   const { userStore } = useStore();
@@ -46,7 +32,7 @@ const Users = (props: Props) => {
       sortable: false,
       width: 160,
       valueGetter: (params: GridValueGetterParams) =>
-        userStore.roleByID(params.row.roleId),
+        roleByID(params.row.roleId),
     },
     { field: "email", headerName: "Email address", flex: 1, minWidth: 100 },
     {
@@ -69,6 +55,12 @@ const Users = (props: Props) => {
 
   const [selectionModel, setSelectionModel] = useState<GridSelectionModel>([]);
 
+  const [dialogModel, setDialogModel] = useState<DialogModelType>();
+
+  const handleClose = () => {
+    if (!!dialogModel) setDialogModel(undefined);
+  };
+
   return (
     <>
       <DataGrid
@@ -90,15 +82,20 @@ const Users = (props: Props) => {
         getRowClassName={(params) => `is-active-user--${params.row.active}`}
         selectionModel={selectionModel}
         onSelectionModelChange={(newModel, opt) => {
-          setSelectionModel(newModel)}
-        }
+          setSelectionModel(newModel);
+        }}
         components={{
           Toolbar: () => (
             <GridToolbarContainer
               sx={{ justifyContent: "space-between", gap: 2 }}
             >
-              {/* <GridToolbarColumnsButton /> */}
-              <Button color="info" variant="contained">
+              <Button
+                color="info"
+                variant="contained"
+                onClick={() => {
+                  setDialogModel("add");
+                }}
+              >
                 Add user
               </Button>
               <Typography align="center" variant="h5">
@@ -114,18 +111,37 @@ const Users = (props: Props) => {
                   height: !selectionModel.length ? "0px" : undefined,
                 }}
               >
-                <Button color="warning" variant="contained">
+                <Button
+                  color="warning"
+                  variant="contained"
+                  onClick={() => {
+                    setDialogModel("change");
+                  }}
+                >
                   Change role
                 </Button>
-                <Button color={userStore.userByID(selectionModel[0])?.active ? "error" : "success"} variant="contained">
-                {userStore.userByID(selectionModel[0])?.active ? "Disable" : "Enable"}
+                <Button
+                  color={
+                    userStore.userByID(selectionModel[0])?.active
+                      ? "error"
+                      : "success"
+                  }
+                  variant="contained"
+                >
+                  {userStore.userByID(selectionModel[0])?.active
+                    ? "Disable"
+                    : "Enable"}
                 </Button>
               </Box>
             </GridToolbarContainer>
           ),
         }}
       />
-      <UserForm />
+      <UserForm
+        model={dialogModel}
+        handleClose={handleClose}
+        userId={useMemo(() => selectionModel[0], [selectionModel[0]])}
+      />
     </>
   );
 };

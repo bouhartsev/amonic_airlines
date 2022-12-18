@@ -1,21 +1,26 @@
 import { makeSimpleAutoObservable } from "utils/mobx-extensions"
-import { action } from "mobx";
+import { action, runInAction } from "mobx";
 import api, { setAuthToken } from "utils/api"
 import BasicStore from "./BasicStore"
 import jwt_decode from "jwt-decode";
 
-type userType = {
-    "id": number,
-    "role": "office user" | "administrator",
-    "active": true,
-    "age": number,
-    "birthdate": string,
-    "email": string,
-    "firstName": string,
-    "lastName": string,
-    "officeId": number,
-    "roleId": number
-} | undefined;
+export const roles = ["administrator", "office user"] as const;
+export const roleByID = (roleId: userType["roleId"]) => roles[Number(roleId) - 1];
+
+export type userType = {
+    id: number | string,
+    role?: typeof roles[number],
+    active?: boolean,
+    age?: number,
+    birthdate: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    officeId: number,
+    roleId: number | string,
+};
+
+type officeType = { id: number, title: string };
 
 class UserStore extends BasicStore {
     constructor(...args: any[]) {
@@ -27,20 +32,20 @@ class UserStore extends BasicStore {
     }
 
     isLogged: boolean = false;
-    userData: userType = undefined;
+    userData: userType | Record<string, never> = {};
     users: userType[] = [];
-    offices: any[] = [];
+    offices: officeType[] = [];
 
-    roleByID = (roleId: number | string) => roleId == 1 ? "administrator" : "office user";
     officeByID = (officeId: number | string) => this.offices.find((item) => item.id == officeId);
     userByID = (userId: number | string) => this.users.find((item) => item?.id == userId);
 
     setAuth = (token: string) => {
         const tokenData: any = jwt_decode(token);
-        if (Date.now() <= tokenData.exp) return; // check if token is valid
+        console.log(tokenData);
+        if (Date.now() >= tokenData.exp * 1000) return; // check if token is valid
         this.isLogged = true;
         setAuthToken(token);
-        this.userData = { ...tokenData.user, role: this.roleByID(tokenData.user.roleId) };
+        this.userData = { ...tokenData.user, role: roleByID(tokenData.user.roleId) };
     }
 
     login = (username: string, password: string) => {
@@ -49,7 +54,6 @@ class UserStore extends BasicStore {
         return this.rootStore.fakeStore.newLoginAtt().then(() =>
             api.post("/auth/sign-in", { login: username, password }))
             .then((response: any) => {
-                console.log(response.data);
                 this.status = "success";
                 localStorage.setItem("jwtToken", response.data.token);
                 this.setAuth(response.data.token);
@@ -58,7 +62,7 @@ class UserStore extends BasicStore {
                 this.status = "error";
 
                 switch (err.response?.data?.code) {
-                    case "invalid_credentials:series": // пока работает некорректно!!!
+                    case "invalid_credentials:series": // working wrong yet!!!
                         let tryAfter = 10;
                         this.status = "forbidden";
                         let attemptsTimer = setInterval(action(() => {
@@ -103,8 +107,10 @@ class UserStore extends BasicStore {
         this.status = "pending";
         return api.get("/users")
             .then((response: any) => {
-                this.status = "success";
-                this.users = response.data.users;//.map((el: any) => ({ ...el, active: false }));
+                runInAction(() => {
+                    this.status = "success";
+                    this.users = response.data.users;//.map((el: any) => ({ ...el, active: false }));
+                });
             })
             .catch((err) => { this.status = "error"; throw err; });
     }

@@ -8,7 +8,7 @@ const NavBar = () => {
   const { userStore } = useStore();
   return (
     <AppBar position="sticky">
-      <Container maxWidth="xl" disableGutters sx={{p: 3}}>
+      <Container maxWidth="xl" disableGutters sx={{p: 4}}>
         <Toolbar disableGutters>
           {!userStore.isLogged ? <NavBarPublic /> : <NavBarAuth role={userStore.userData?.role}/>}
         </Toolbar>
