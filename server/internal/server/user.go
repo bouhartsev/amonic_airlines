@@ -115,7 +115,7 @@ func (s *Server) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := s.core.GetUser(c.Request.Context(), &domain.GetUserRequest{UserId: userId})
+	_, err = s.core.GetUser(c.Request.Context(), &domain.GetUserRequest{UserId: userId})
 
 	if err != nil {
 		delivery.ErrorResponse(c, err)
@@ -129,6 +129,7 @@ func (s *Server) UpdateUser(c *gin.Context) {
 		return
 	}
 
+	input.UserId = userId
 	err = s.core.UpdateUser(c.Request.Context(), input)
 
 	if err != nil {
@@ -136,14 +137,14 @@ func (s *Server) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user, err = s.core.GetUser(c.Request.Context(), &domain.GetUserRequest{UserId: userId})
+	updatedUser, err := s.core.GetUser(c.Request.Context(), &domain.GetUserRequest{UserId: userId})
 
 	if err != nil {
 		delivery.ErrorResponse(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, updatedUser)
 }
 
 // GetUserLogins godoc
