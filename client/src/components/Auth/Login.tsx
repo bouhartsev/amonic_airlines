@@ -41,7 +41,7 @@ const Login = () => {
         flexDirection: "column",
         alignItems: "center",
         m: "auto",
-        width: 400
+        width: 400,
       }}
     >
       <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -50,10 +50,7 @@ const Login = () => {
       <Typography component="h1" variant="h5">
         Login
       </Typography>
-      <FormContainer
-        formContext={formContext}
-        onSuccess={handleSubmit}
-      >
+      <FormContainer formContext={formContext} onSuccess={handleSubmit}>
         <TextFieldElement
           required
           type="email"
@@ -69,7 +66,9 @@ const Login = () => {
           fullWidth
           margin="normal"
         />
-        <Typography color="error">{userStore.error}</Typography>
+        <Typography color="error">
+          {userStore.status === "error" && userStore.error}
+        </Typography>
         <Box sx={{ my: 3, display: "flex", gap: 1 }}>
           <LoadingButton
             type="submit"
@@ -80,7 +79,14 @@ const Login = () => {
           >
             Sign In
           </LoadingButton>
-          <Button component={RouterLink} to="/" variant="contained" color="warning">Exit</Button>
+          <Button
+            component={RouterLink}
+            to="/"
+            variant="contained"
+            color="warning"
+          >
+            Exit
+          </Button>
         </Box>
       </FormContainer>
     </Box>

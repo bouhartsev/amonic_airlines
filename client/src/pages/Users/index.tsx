@@ -20,6 +20,8 @@ type Props = {};
 const Users = (props: Props) => {
   const { userStore } = useStore();
 
+  // const [newRows, setNewRows] = React.useState([]);
+
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 30, hide: true },
     { field: "firstName", headerName: "First name", width: 130 },
@@ -67,9 +69,7 @@ const Users = (props: Props) => {
         rows={userStore.users}
         columns={columns}
         autoHeight
-        loading={
-          userStore.status === "pending" || userStore.status === "initial"
-        }
+        loading={userStore.status === "pending"}
         sx={{
           "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
             {
@@ -142,6 +142,7 @@ const Users = (props: Props) => {
         handleClose={handleClose}
         userId={useMemo(() => selectionModel[0], [selectionModel[0]])}
       />
+      {/* {JSON.stringify(userStore.users)} */}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const api = axios.create({
+export const api = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL || "http://localhost:8080/api/v1",
 });
 
@@ -12,4 +12,4 @@ export const setAuthToken = (token?: string) => {
     }
 }
 
-export default api;
+export default axios;

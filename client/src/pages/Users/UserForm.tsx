@@ -28,18 +28,17 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
 import { userType, roles } from "stores/UserStore";
 import styles from "./index.module.css";
+import { LoadingButton } from "@mui/lab";
 
-const rolesObj = roles.map((el, ind) => ({ id: ind + 1, label: el })).reverse();
+const rolesObj = roles
+  .map((el, ind) => ({ id: (ind + 1).toString(), label: el }))
+  .reverse();
 
 type Props = {
   model: DialogModelType;
   userId?: userType["id"];
   handleClose: VoidFunction;
 };
-
-// const FormContainer = (props) => {
-
-// }
 
 const UserForm = (props: Props) => {
   const { userStore } = useStore();
@@ -51,25 +50,33 @@ const UserForm = (props: Props) => {
         ? userStore.userByID(props.userId)
         : { roleId: rolesObj[0].id };
 
-    console.log({ ...currentUser });
-    formContext.reset(currentUser);
+    formContext.reset({
+      ...currentUser,
+      roleId: currentUser?.roleId.toString(),
+    });
 
     return () => {};
   }, [userStore, formContext, props.userId, props.model]);
 
-  const handleSubmit = (data: userType) => {
-    // userStore
-    console.log(data);
-  };
   const handleClose = () => {
+    userStore.status = "initial";
     formContext.reset({});
     props.handleClose();
+  };
+  const thenClose = (act: Promise<any>) => {
+    return act.then((res)=>{if (userStore.status === "success") handleClose()});
+  };
+  const handleSubmit = (data: userType) => {
+    return thenClose(
+      props.model === "change" && !!props.userId
+        ? userStore.updateUser(data)
+        : userStore.addUser(data)
+    );
   };
 
   return (
     <>
       <Dialog open={!!props.model} onClose={handleClose}>
-        {/*  PaperComponent={({children})=>{return <FormContainer formContext={formContext} onSuccess={handleSubmit}><Paper>{children}</Paper></FormContainer>}} */}
         <DialogTitle>
           {props.model === "change" ? "Change role" : "Add user"}
           <IconButton
@@ -128,15 +135,16 @@ const UserForm = (props: Props) => {
                 }}
                 options={userStore.offices}
               />
-              <Box>
+              <Box className={props.model !== "change" ? "" : styles.hidden}>
+                {/* there are issues with date enter */}
                 <DatePickerElement
-                  required
+                  required={props.model === "add"}
                   name="birthdate"
                   label="Birthday"
                   inputProps={{ fullWidth: true, margin: "normal" }}
                 />
                 <PasswordElement
-                  required
+                  required={props.model === "add"}
                   disabled={props.model !== "add"}
                   name="password"
                   label="Password"
@@ -149,13 +157,22 @@ const UserForm = (props: Props) => {
                   required
                   name="roleId"
                   label="Role"
+                  type="string"
                   options={rolesObj}
                 />
               </Box>
+              <Typography color="error">
+                {userStore.status === "error" && userStore.error}
+              </Typography>
               <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-                <Button type="submit" variant="contained" fullWidth>
+                <LoadingButton
+                  type="submit"
+                  loading={userStore.status === "pending"}
+                  variant="contained"
+                  fullWidth
+                >
                   Save
-                </Button>
+                </LoadingButton>
                 <Button
                   type="reset"
                   onClick={handleClose}
