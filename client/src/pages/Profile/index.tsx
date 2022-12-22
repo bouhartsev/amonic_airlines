@@ -4,7 +4,8 @@ import { tableBaseSX } from "utils/theme";
 import { toJS } from "mobx";
 import React, { useEffect, useState } from "react";
 import { useStore } from "stores";
-import { options } from "yargs";
+import { observer } from "mobx-react-lite";
+import UndetectedForm from "./UndetectedForm";
 
 type Props = {};
 
@@ -13,12 +14,12 @@ const getStringOrNull = (params: GridValueGetterParams) =>
 const getTimeOrNull = (params: GridValueGetterParams) =>
   !params.row[params.field]
     ? "--"
-    : new Date(params.row[params.field]+" +0000").toLocaleString();
+    : new Date(params.row[params.field] + " +0000").toLocaleString();
 
 const columns: GridColDef[] = [
   {
     field: "loginTime",
-    headerName: "Login Time",
+    headerName: "Login time",
     width: 170,
     valueGetter: getTimeOrNull,
   },
@@ -30,14 +31,15 @@ const columns: GridColDef[] = [
   },
   {
     field: "timeSpent",
-    headerName: "Time spent on system",
+    headerName: "Duration",
+    description: "Time spent on system",
     width: 100,
     valueGetter: getStringOrNull,
   },
   {
     field: "error",
-    headerName: "Unsuccessful logout reason",
-    description: "Why has it happened?",
+    headerName: "Crash reason",
+    description: "Unsuccessful logout reason",
     sortable: false,
     minWidth: 200,
     flex: 1,
@@ -48,10 +50,14 @@ const columns: GridColDef[] = [
 const Profile = (props: Props) => {
   const { userStore } = useStore();
 
-  const [currentSessionTime, setCurrentSessionTime] = useState<string>("--:--:--");
+  const [undetected, setUndetected] = useState<boolean>(false);
+  const [currentSessionTime, setCurrentSessionTime] =
+    useState<string>("--:--:--");
 
   useEffect(() => {
-    userStore.getProfile(userStore.userData.id);
+    userStore.getProfile(userStore.userData.id).then(() => {
+      if (!!userStore.profileData.LastLoginErrorDatetime) setUndetected(true);
+    });
     const watches = setInterval(
       () =>
         setCurrentSessionTime(
@@ -94,8 +100,12 @@ const Profile = (props: Props) => {
         }
         disableSelectionOnClick
       />
+      <UndetectedForm
+        open={undetected}
+        handleClose={() => setUndetected(false)}
+      />
     </>
   );
 };
 
-export default Profile;
+export default observer(Profile);

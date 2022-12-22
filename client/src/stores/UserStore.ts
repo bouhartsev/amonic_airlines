@@ -21,9 +21,12 @@ export type UserType = {
     password?: string,
 };
 
+type OfficeType = { id: number, title: string };
+
 type ProfileType = {
     "iat": number,
     "exp": number,
+    "LastLoginErrorDatetime": string,
     "numberOfCrashes": number,
     "userLogins": Record<string,
         {
@@ -36,7 +39,11 @@ type ProfileType = {
     >[]
 }
 
-type OfficeType = { id: number, title: string };
+export type ReportType = {
+    "reason": string,
+    "softwareCrash": boolean,
+    "systemCrash": boolean,
+}
 
 class UserStore extends BasicStore {
     constructor(...args: any[]) {
@@ -128,7 +135,7 @@ class UserStore extends BasicStore {
                     this.status = "success";
                     this.error = "";
                     const data = response.data;
-                    data.userLogins = data.userLogins.map((el:ProfileType["userLogins"][number], ind: number) => ({ ...el, id: ind }));
+                    data.userLogins = data.userLogins.map((el: ProfileType["userLogins"][number], ind: number) => ({ ...el, id: ind }));
                     this.profileData = { ...this.profileData, ...data };
                 });
             })
@@ -194,6 +201,13 @@ class UserStore extends BasicStore {
             this.status = "success";
             const ind = this.users.findIndex((item) => item?.id == userId);
             this.users[ind].active = !this.users[ind].active;
+        })
+    }
+    report = (data: ReportType) => {
+        this.status = "pending";
+        return api.post("/auth/report", data).then(() => {
+            this.status = "success";
+            this.getProfile(this.userData.id);
         })
     }
 };
