@@ -13,6 +13,7 @@ import { useStore } from "stores";
 import { toJS } from "mobx";
 import UserForm from "./UserForm";
 import { roleByID } from "stores/UserStore";
+import "index.css";
 
 export type DialogModelType = "add" | "change" | undefined;
 
@@ -75,6 +76,9 @@ const Users = (props: Props) => {
               outline: "none !important",
             },
           "& .is-active-user--false": {
+            color: (theme) => theme.palette.error.contrastText,
+          },
+          "& .is-active-user--false::before": {
             bgcolor: (theme) => theme.palette.error.light,
           },
         }}
@@ -134,7 +138,6 @@ const Users = (props: Props) => {
                 </Button>
               </Box>
             </GridToolbarContainer>
-            // BaseSelect // to visually update active status
           ),
         }}
       />

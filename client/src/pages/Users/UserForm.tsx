@@ -27,7 +27,7 @@ import { DialogModelType } from "./";
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
 import { UserType, roles } from "stores/UserStore";
-import styles from "./index.module.css";
+import "./index.css";
 import { LoadingButton } from "@mui/lab";
 
 const rolesObj = roles
@@ -136,7 +136,7 @@ const UserForm = (props: Props) => {
                 }}
                 options={userStore.offices}
               />
-              <Box className={props.model !== "change" ? "" : styles.hidden}>
+              <Box className={props.model !== "change" ? "" : "hidden"}>
                 {/* there are issues with date enter */}
                 <DatePickerElement
                   required={props.model === "add"}
@@ -153,7 +153,7 @@ const UserForm = (props: Props) => {
                   margin="normal"
                 />
               </Box>
-              <Box className={props.model === "change" ? "" : styles.hidden}>
+              <Box className={props.model === "change" ? "" : "hidden"}>
                 <RadioButtonGroup
                   required
                   name="roleId"
