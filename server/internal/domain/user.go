@@ -10,7 +10,7 @@ type User struct {
 	FirstName           *string    `json:"firstName,omitempty" example:"Alex"`
 	LastName            *string    `json:"lastName,omitempty" example:"Herbarien"`
 	OfficeId            *int       `json:"officeId,omitempty" example:"20"`
-	Birthdate           *time.Time `json:"birthdate,omitempty" example:"2017-12-31"`
+	Birthdate           *string    `json:"birthdate,omitempty" example:"2017-12-31"`
 	Age                 *int       `json:"age,omitempty" example:"30"`
 	Active              *bool      `json:"active,omitempty"`
 	IncorrectLoginTries *int       `json:"-"`
@@ -18,12 +18,12 @@ type User struct {
 }
 
 type CreateUserRequest struct {
-	Email     string    `json:"email,omitempty" example:"something@mail.com"`
-	FirstName string    `json:"firstName,omitempty" example:"Alex"`
-	LastName  string    `json:"lastName,omitempty" example:"Herbarien"`
-	OfficeId  int       `json:"officeId,omitempty" example:"20"`
-	Birthdate time.Time `json:"birthdate,omitempty" example:"2017-12-31"`
-	Password  string    `json:"password,omitempty" example:"renatikadik22"`
+	Email     string `json:"email" example:"something@mail.com"`
+	FirstName string `json:"firstName" example:"Alex"`
+	LastName  string `json:"lastName" example:"Herbarien"`
+	OfficeId  int    `json:"officeId" example:"20"`
+	Birthdate string `json:"birthdate" example:"2017-12-31"`
+	Password  string `json:"password" example:"renatikadik22"`
 }
 
 type CreateUserResponse struct {

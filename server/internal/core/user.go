@@ -9,12 +9,11 @@ import (
 
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain"
 	"github.com/bouhartsev/amonic_airlines/server/internal/domain/errdomain"
-	"github.com/bouhartsev/amonic_airlines/server/pkg/ptr"
 )
 
 func (c *Core) CreateUser(ctx context.Context, request *domain.CreateUserRequest) (*domain.User, error) {
-	_, err := c.db.QueryContext(ctx, `select id from users where email = ?`, request.Email)
-
+	var userId int
+	err := c.db.QueryRowContext(ctx, `select id from users where lower(email) = lower(?)`, request.Email).Scan(&userId)
 	if err == nil {
 		return nil, errdomain.EmailAlreadyTakenError
 	}
@@ -27,7 +26,7 @@ func (c *Core) CreateUser(ctx context.Context, request *domain.CreateUserRequest
 	result, err := c.db.ExecContext(
 		ctx,
 		`insert into users(roleid, email, firstname, lastname, officeid, birthdate, password, active)
-                           values(2, ?, ?, ?, ?, cast(? as date), ?, false)`,
+                           values(2, ?, ?, ?, ?, cast(? as date), ?, true)`,
 		request.Email,
 		request.FirstName,
 		request.LastName,
@@ -46,20 +45,16 @@ func (c *Core) CreateUser(ctx context.Context, request *domain.CreateUserRequest
 		return nil, errdomain.NewInternalError(err.Error())
 	}
 
-	return &domain.User{
-		Id:        ptr.Int(int(insertedId)),
-		RoleId:    ptr.Int(2),
-		Email:     ptr.String(request.Email),
-		FirstName: ptr.String(request.FirstName),
-		LastName:  ptr.String(request.LastName),
-		OfficeId:  ptr.Int(request.OfficeId),
-		Birthdate: ptr.Time(request.Birthdate),
-		Active:    ptr.Bool(false),
-	}, nil
+	user, err := c.GetUser(ctx, &domain.GetUserRequest{UserId: int(insertedId)})
+	if err != nil {
+		return nil, err
+	}
+
+	return user.User, nil
 }
 
 func (c *Core) GetUsers(ctx context.Context, request *domain.GetUsersRequest) (*domain.GetUsersResponse, error) {
-	q := `select id, roleid, email, firstname, lastname, officeid, timestampdiff(year, birthdate, now()), active from users `
+	q := `select id, roleid, email, firstname, lastname, officeid, DATE_FORMAT(birthdate, "%Y-%m-%d"), timestampdiff(year, birthdate, now()), active from users `
 	var args []any
 
 	if request.OfficeId != nil {
@@ -86,6 +81,7 @@ func (c *Core) GetUsers(ctx context.Context, request *domain.GetUsersRequest) (*
 			&user.FirstName,
 			&user.LastName,
 			&user.OfficeId,
+			&user.Birthdate,
 			&user.Age,
 			&user.Active,
 		)
@@ -102,7 +98,7 @@ func (c *Core) GetUsers(ctx context.Context, request *domain.GetUsersRequest) (*
 }
 
 func (c *Core) GetUser(ctx context.Context, request *domain.GetUserRequest) (*domain.GetUserResponse, error) {
-	q := `select roleid, email, firstname, lastname, officeid, timestampdiff(year, birthdate, now()), active from users where id = ?`
+	q := `select roleid, email, firstname, lastname, officeid, DATE_FORMAT(birthdate, "%Y-%m-%d"), timestampdiff(year, birthdate, now()), active from users where id = ?`
 
 	row := c.db.QueryRowContext(ctx, q, request.UserId)
 
@@ -114,6 +110,7 @@ func (c *Core) GetUser(ctx context.Context, request *domain.GetUserRequest) (*do
 		&user.FirstName,
 		&user.LastName,
 		&user.OfficeId,
+		&user.Birthdate,
 		&user.Age,
 		&user.Active,
 	)
