@@ -80,7 +80,7 @@ const Login = () => {
           >
             Sign In
           </LoadingButton>
-          <Button component={RouterLink} to="/" variant="contained" color="warning">Exit</Button>
+          <Button component={RouterLink} to="/" variant="contained" color="secondary">Exit</Button>
         </Box>
       </FormContainer>
     </Box>
