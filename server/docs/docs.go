@@ -16,6 +16,34 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/airports": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Возвращает список аэропортов.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.GetAirportsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/sign-in": {
             "post": {
                 "description": "Возвращает JWT токен при успешной авторизации.\n\nCписок возможных кодов ошибок:\n* ` + "`" + `invalid_credentials` + "`" + ` - Неверный логин или пароль.\n* ` + "`" + `user:disabled` + "`" + ` - Пользователь заблокирован.",
@@ -41,10 +69,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                            "$ref": "#/definitions/domain.SignInResponse"
                         }
                     },
                     "404": {
@@ -58,6 +86,321 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/errdomain.ErrorResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cabin-types": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CabinTypes"
+                ],
+                "summary": "Возвращает список типов cabins.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.GetCabinTypesResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/countries": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Countries"
+                ],
+                "summary": "Возвращает список стран.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.GetCountriesResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reviews": {
+            "post": {
+                "description": "У поля ` + "`" + `gender` + "`" + ` 0 - Male, 1 - Female.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Добавляет отзыв.",
+                "parameters": [
+                    {
+                        "description": "JSON input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.AddReviewRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reviews/brief": {
+            "get": {
+                "description": "Поля ` + "`" + `to` + "`" + ` и ` + "`" + `from` + "`" + ` в query обязательны.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Возвращает суммарный отчет.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Дата, представленная начальной границей выборки",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Дата, представленная конечной границей выборки",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.GetBriefReviewsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Возвращает список расписаний полетов(schedules).",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Имя аэропорта, в который идет отправление",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Имя аэропорта, из коготорого идет отправление",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Сортировка. Возможные значения: ` + "`" + `datetime` + "`" + `, ` + "`" + `price` + "`" + `, ` + "`" + `confirmed` + "`" + `, ` + "`" + `unconfirmed` + "`" + `. По умолчанию ` + "`" + `datetime` + "`" + `.",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Фильтр по дате вылета",
+                        "name": "outbound",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Фильтр по номету полета",
+                        "name": "flightNumber",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.GetSchedulesResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{schedule_id}": {
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Обновляет расписание.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор расписания",
+                        "name": "schedule_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "JSON input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.UpdateScheduleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{schedule_id}/confirm": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Помечает расписание как подтвержденное.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор расписания",
+                        "name": "schedule_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/schedules/{schedule_id}/unconfirm": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Помечает расписание как НЕподтвержденное.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор расписания",
+                        "name": "schedule_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -85,8 +428,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Фильтрация по офису, к которому принадлежат пользователи",
                         "name": "officeId",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -166,6 +508,63 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errdomain.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Если пользователь не найден, вернет ошибку с кодом ` + "`" + `user:not_found` + "`" + `.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Возвращает информацию о пользователе.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор пользователя",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "JSON input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.UpdateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -183,6 +582,128 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.AddReviewRequest": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "answers": {
+                    "$ref": "#/definitions/domain.Answers"
+                },
+                "cabinTypeId": {
+                    "type": "integer"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.AddTicketRequest": {
+            "type": "object",
+            "properties": {
+                "outbound": {
+                    "$ref": "#/definitions/domain.TicketInfo"
+                },
+                "passenger": {
+                    "type": "object",
+                    "properties": {
+                        "birthdate": {
+                            "type": "string"
+                        },
+                        "firstname": {
+                            "type": "string"
+                        },
+                        "lastname": {
+                            "type": "string"
+                        },
+                        "passportCountryId": {
+                            "type": "integer"
+                        },
+                        "passportNumber": {
+                            "type": "string"
+                        },
+                        "phone": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "return": {
+                    "$ref": "#/definitions/domain.TicketInfo"
+                }
+            }
+        },
+        "domain.Airport": {
+            "type": "object",
+            "properties": {
+                "IATACode": {
+                    "type": "string"
+                },
+                "countryId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Answers": {
+            "type": "object",
+            "properties": {
+                "q1": {
+                    "type": "integer"
+                },
+                "q2": {
+                    "type": "integer"
+                },
+                "q3": {
+                    "type": "integer"
+                },
+                "q4": {
+                    "type": "integer"
+                },
+                "q5": {
+                    "type": "integer"
+                },
+                "q6": {
+                    "type": "integer"
+                },
+                "q7": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.CabinType": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Country": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.CreateUserRequest": {
             "type": "object",
             "properties": {
@@ -206,6 +727,158 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.GetAirportsResponse": {
+            "type": "object",
+            "properties": {
+                "airports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Airport"
+                    }
+                }
+            }
+        },
+        "domain.GetBriefReviewsResponse": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "object",
+                    "properties": {
+                        "18-24": {
+                            "type": "integer"
+                        },
+                        "25-39": {
+                            "type": "integer"
+                        },
+                        "40-59": {
+                            "type": "integer"
+                        },
+                        "60": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "cabinType": {
+                    "type": "object",
+                    "properties": {
+                        "business": {
+                            "type": "integer"
+                        },
+                        "economy": {
+                            "type": "integer"
+                        },
+                        "first": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "destinationAirport": {
+                    "type": "object",
+                    "properties": {
+                        "AUH": {
+                            "type": "integer"
+                        },
+                        "BAH": {
+                            "type": "integer"
+                        },
+                        "CAI": {
+                            "type": "integer"
+                        },
+                        "DOH": {
+                            "type": "integer"
+                        },
+                        "RYU": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "gender": {
+                    "type": "object",
+                    "properties": {
+                        "female": {
+                            "type": "integer"
+                        },
+                        "male": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.GetCabinTypesResponse": {
+            "type": "object",
+            "properties": {
+                "cabinTypes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CabinType"
+                    }
+                }
+            }
+        },
+        "domain.GetCountriesResponse": {
+            "type": "object",
+            "properties": {
+                "countries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Country"
+                    }
+                }
+            }
+        },
+        "domain.GetSchedulesResponse": {
+            "type": "object",
+            "properties": {
+                "schedules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Schedule"
+                    }
+                }
+            }
+        },
+        "domain.Schedule": {
+            "type": "object",
+            "properties": {
+                "aircraft": {
+                    "type": "string"
+                },
+                "businessPrice": {
+                    "type": "number"
+                },
+                "confirmed": {
+                    "type": "boolean"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "economyPrice": {
+                    "type": "number"
+                },
+                "firstClassPrice": {
+                    "type": "number"
+                },
+                "flightNumber": {
+                    "type": "integer"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.SignInRequest": {
             "type": "object",
             "required": [
@@ -221,11 +894,67 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.SignInResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.TicketInfo": {
+            "type": "object",
+            "properties": {
+                "cabinTypeId": {
+                    "type": "integer"
+                },
+                "scheduleId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.UpdateScheduleRequest": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "economyPrice": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "officeId": {
+                    "type": "integer"
+                },
+                "roleId": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.User": {
             "type": "object",
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "age": {
+                    "type": "integer"
                 },
                 "birthdate": {
                     "type": "string"
@@ -256,6 +985,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string"
                 },
+                "details": {},
                 "message": {
                     "type": "string"
                 },
