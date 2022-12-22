@@ -172,7 +172,7 @@ func (s *Server) GetUserLogins(c *gin.Context) {
 
 // SwitchUserStatus godoc
 // @Summary Переключает флаг active.
-// @Tags Schedules
+// @Tags Users
 // @Accept json
 // @Produce json
 // @Param user_id path int true "Идентификатор расписания"
