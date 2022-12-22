@@ -40,12 +40,12 @@ func (s *Server) initRoutes() *gin.Engine {
 	users.GET(`:user_id`, s.GetUser)
 	users.PATCH(`:user_id`, s.UpdateUser)
 	users.GET(`:user_id/logins`, s.GetUserLogins)
+	users.POST(`:user_id/switch-status`, s.SwitchUserStatus)
 
 	schedules := api.Group(`schedules`)
 	schedules.GET(``, s.GetSchedules)
 	schedules.PATCH(`:schedule_id`, s.UpdateSchedule)
-	schedules.POST(`:schedule_id/confirm`, s.ConfirmSchedule)
-	schedules.POST(`:schedule_id/unconfirm`, s.UnconfirmSchedule)
+	schedules.POST(`:schedule_id/switch-status`, s.SwitchScheduleStatus)
 	schedules.POST(`/upload`, s.UpdateSchedulesFromFile)
 
 	api.GET(`countries`, s.GetCountries)

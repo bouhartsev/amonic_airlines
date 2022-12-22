@@ -215,3 +215,8 @@ func (c *Core) GetUserLogins(ctx context.Context, id int) (*domain.GetUserLogins
 
 	return resp, nil
 }
+
+func (c *Core) SwitchUserStatus(ctx context.Context, id int) error {
+	_, err := c.db.ExecContext(ctx, `update users set active = !active where id = ?`, id)
+	return err
+}

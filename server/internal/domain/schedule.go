@@ -46,7 +46,7 @@ type UpdateScheduleRequest struct {
 	EconomyPrice *float32 `json:"economyPrice,omitempty" example:"12.25"`
 }
 
-type ConfirmScheduleRequest struct {
+type SwitchScheduleStatusRequest struct {
 	ScheduleId int `json:"-"`
 }
 

@@ -67,41 +67,19 @@ func (s *Server) GetSchedules(c *gin.Context) {
 	c.JSON(http.StatusOK, schedules)
 }
 
-// ConfirmSchedule godoc
-// @Summary Помечает расписание как подтвержденное.
+// SwitchScheduleStatus godoc
+// @Summary Переключает флаг confirmed.
 // @Tags Schedules
 // @Accept json
 // @Produce json
 // @Param schedule_id path int true "Идентификатор расписания"
 // @Success 200
 // @Failure 500 {object} errdomain.ErrorResponse
-// @Router /api/schedules/{schedule_id}/confirm [post]
-func (s *Server) ConfirmSchedule(c *gin.Context) {
+// @Router /api/schedules/{schedule_id}/switch-status [post]
+func (s *Server) SwitchScheduleStatus(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("schedule_id"))
 
-	err := s.core.ConfirmSchedule(c.Request.Context(), &domain.ConfirmScheduleRequest{ScheduleId: id})
-
-	if err != nil {
-		delivery.ErrorResponse(c, err)
-		return
-	}
-
-	c.Status(http.StatusOK)
-}
-
-// UnconfirmSchedule godoc
-// @Summary Помечает расписание как НЕподтвержденное.
-// @Tags Schedules
-// @Accept json
-// @Produce json
-// @Param schedule_id path int true "Идентификатор расписания"
-// @Success 200
-// @Failure 500 {object} errdomain.ErrorResponse
-// @Router /api/schedules/{schedule_id}/unconfirm [post]
-func (s *Server) UnconfirmSchedule(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("schedule_id"))
-
-	err := s.core.UnconfirmSchedule(c.Request.Context(), &domain.UnconfirmScheduleRequest{ScheduleId: id})
+	err := s.core.SwitchScheduleStatus(c.Request.Context(), &domain.SwitchScheduleStatusRequest{ScheduleId: id})
 
 	if err != nil {
 		delivery.ErrorResponse(c, err)

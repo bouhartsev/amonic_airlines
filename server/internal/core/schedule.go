@@ -151,13 +151,8 @@ func (c *Core) UpdateSchedule(ctx context.Context, request *domain.UpdateSchedul
 	return err
 }
 
-func (c *Core) ConfirmSchedule(ctx context.Context, request *domain.ConfirmScheduleRequest) error {
-	_, err := c.db.ExecContext(ctx, `update schedules set confirmed = 1 where id = ?`, request.ScheduleId)
-	return err
-}
-
-func (c *Core) UnconfirmSchedule(ctx context.Context, request *domain.UnconfirmScheduleRequest) error {
-	_, err := c.db.ExecContext(ctx, `update schedules set confirmed = 0 where id = ?`, request.ScheduleId)
+func (c *Core) SwitchScheduleStatus(ctx context.Context, request *domain.SwitchScheduleStatusRequest) error {
+	_, err := c.db.ExecContext(ctx, `update schedules set confirmed = !confirmed where id = ?`, request.ScheduleId)
 	return err
 }
 

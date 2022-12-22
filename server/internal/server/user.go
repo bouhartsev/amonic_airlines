@@ -169,3 +169,25 @@ func (s *Server) GetUserLogins(c *gin.Context) {
 
 	c.JSON(http.StatusOK, users)
 }
+
+// SwitchUserStatus godoc
+// @Summary Переключает флаг active.
+// @Tags Schedules
+// @Accept json
+// @Produce json
+// @Param user_id path int true "Идентификатор расписания"
+// @Success 200
+// @Failure 500 {object} errdomain.ErrorResponse
+// @Router /api/users/{user_id}/switch-status [post]
+func (s *Server) SwitchUserStatus(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("user_id"))
+
+	err := s.core.SwitchUserStatus(c.Request.Context(), id)
+
+	if err != nil {
+		delivery.ErrorResponse(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
