@@ -10,6 +10,7 @@ import {
 } from "@mui/x-data-grid";
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
+import { toJS } from "mobx";
 import UserForm from "./UserForm";
 import { roleByID } from "stores/UserStore";
 
@@ -19,8 +20,6 @@ type Props = {};
 
 const Users = (props: Props) => {
   const { userStore } = useStore();
-
-  // const [newRows, setNewRows] = React.useState([]);
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 30, hide: true },
@@ -66,7 +65,7 @@ const Users = (props: Props) => {
   return (
     <>
       <DataGrid
-        rows={userStore.users}
+        rows={toJS(userStore.users)}
         columns={columns}
         autoHeight
         loading={userStore.status === "pending"}
@@ -127,6 +126,7 @@ const Users = (props: Props) => {
                       : "success"
                   }
                   variant="contained"
+                  onClick={() => userStore.switchActive(selectionModel[0])}
                 >
                   {userStore.userByID(selectionModel[0])?.active
                     ? "Disable"
@@ -134,6 +134,7 @@ const Users = (props: Props) => {
                 </Button>
               </Box>
             </GridToolbarContainer>
+            // BaseSelect // to visually update active status
           ),
         }}
       />
@@ -142,7 +143,6 @@ const Users = (props: Props) => {
         handleClose={handleClose}
         userId={useMemo(() => selectionModel[0], [selectionModel[0]])}
       />
-      {/* {JSON.stringify(userStore.users)} */}
     </>
   );
 };

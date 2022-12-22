@@ -42,11 +42,16 @@ class UserStore extends BasicStore {
 
     setAuth = (token: string) => {
         const tokenData: any = jwt_decode(token);
-        console.log(tokenData);
         if (Date.now() >= tokenData.exp * 1000) return; // check if token is valid
         this.isLogged = true;
         setAuthToken(token);
         this.userData = { ...tokenData.user, role: roleByID(tokenData.user.roleId) };
+    }
+    removeAuth = () => {
+        this.isLogged = false;
+        localStorage.removeItem("jwtToken");
+        setAuthToken();
+        // remove all data from all stores
     }
 
     login = (username: string, password: string) => {
@@ -64,7 +69,6 @@ class UserStore extends BasicStore {
 
                 switch (err.response?.data?.code) {
                     case "invalid_credentials:series": // not exactly correct on backend
-                        console.log(err.response.data)
                         this.status = "forbidden";
                         let nextTry = new Date(err.response.data.details?.NextTry).getTime();
                         let attemptsTimer = setInterval(action(() => {
@@ -93,10 +97,7 @@ class UserStore extends BasicStore {
         this.status = "pending";
         return api.post("/auth/sign-out").finally(() => {
             this.status = "initial";
-            this.isLogged = false;
-            localStorage.removeItem("jwtToken");
-            setAuthToken();
-            // remove user data
+            this.removeAuth();
         });
     }
 
@@ -123,12 +124,15 @@ class UserStore extends BasicStore {
             })
             .catch((err) => { this.status = "error"; throw err; });
     }
+
     addUser = (data: UserType) => {
         this.status = "pending";
-        return api.post("/users", (({ email, firstName, lastName, officeId, birthdate, password }) => ({ email, firstName, lastName, officeId, birthdate, password }))(data))
+        console.log((new Date(data.birthdate)).toISOString().split('T')[0])
+        return api.post("/users", (({ email, firstName, lastName, officeId, birthdate, password }) => ({ email, firstName, lastName, officeId, birthdate: (new Date(birthdate)).toISOString().split('T')[0], password }))(data))
             .then((response: any) => {
                 this.status = "success";
                 this.error = "";
+                console.log(response.data);
                 this.users.push(response.data.user);
             })
             .catch((err) => {
@@ -137,6 +141,7 @@ class UserStore extends BasicStore {
                 else throw err;
             });
     }
+
     updateUser = (data: UserType) => {
         this.status = "pending";
         const userId = data.id
@@ -146,10 +151,18 @@ class UserStore extends BasicStore {
                 this.error = "";
                 const ind = this.users.findIndex((item) => item?.id == userId);
                 this.users.splice(ind, 1, response.data.user);
-                // console.log(response.data, data.roleId);
                 return;
             })
             .catch((err) => { this.status = "error"; throw err; });
+    }
+
+    switchActive = (userId: UserType["id"]) => {
+        this.status = "pending";
+        return api.post("/users/" + userId + "/switch-status").then(() => {
+            this.status = "success";
+            const ind = this.users.findIndex((item) => item?.id == userId);
+            this.users[ind].active = !this.users[ind].active;
+        })
     }
 };
 
