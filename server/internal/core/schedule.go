@@ -65,21 +65,25 @@ func (c *Core) GetSchedules(ctx context.Context, request *domain.GetSchedulesReq
 		where = "where " + strings.Join(query, " AND ")
 	}
 
-	q := fmt.Sprintf(`select s.id as id, s.date as date, s.time as time,
+	q := fmt.Sprintf(`select s.id as id, s.date as schedule_date, s.time as schedule_time,
                                     a1.Name as air_to, a2.Name as air_from,
                                     s.FlightNumber as flight_number,
-                                    s.confirmed,
-                                    air.Name,
-                                    s.EconomyPrice as economy_price
+                                    s.confirmed as confirmed,
+                                    air.Name as aircraft_name,
+                                    s.EconomyPrice as economy_price,
+                                    air.TotalSeats - count(t.ID) as empty_seats
                              from schedules s
-                                  inner join routes r on s.RouteID = r.ID
-                                  inner join airports a1
-                                      on r.ArrivalAirportID = a1.ID
-                                  inner join airports a2
-                                      on r.DepartureAirportID = a2.ID
-                                  inner join aircrafts air
-                                      on air.ID = s.AircraftID
+                                      inner join routes r on s.RouteID = r.ID
+                                      inner join airports a1
+                                                 on r.ArrivalAirportID = a1.ID
+                                      inner join airports a2
+                                                 on r.DepartureAirportID = a2.ID
+                                      inner join aircrafts air
+                                                 on air.ID = s.AircraftID
+                                      inner join tickets t
+                                                 on s.ID = t.ScheduleID
                              %s
+                             group by id, schedule_date, schedule_time, air_from, flight_number, confirmed, aircraft_name, economy_price
                              order by %s`, where, sort)
 
 	rows, err := c.db.QueryContext(ctx, q, args...)
@@ -104,6 +108,7 @@ func (c *Core) GetSchedules(ctx context.Context, request *domain.GetSchedulesReq
 			&s.Confirmed,
 			&s.Aircraft,
 			&s.EconomyPrice,
+			&s.EmptySeats,
 		)
 
 		if err != nil {
