@@ -41,9 +41,22 @@ const theme = createTheme({
     },
     components: {
         MuiCssBaseline: {
-          styleOverrides: require("assets/fonts.css"),
+            styleOverrides: require("assets/fonts.css"),
         },
-      },
+    },
 });
+
+export const tableBaseSX = {
+    "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
+    {
+        outline: "none !important",
+    },
+    "& .row-status--false": {
+        color: "error.contrastText",
+    },
+    "& .row-status--false::before": {
+        bgcolor: "error.light",
+    },
+}
 
 export default theme;

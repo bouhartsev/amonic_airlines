@@ -27,7 +27,6 @@ import { DialogModelType } from "./";
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
 import { UserType, roles } from "stores/UserStore";
-import "./index.css";
 import { LoadingButton } from "@mui/lab";
 
 const rolesObj = roles
@@ -65,7 +64,9 @@ const UserForm = (props: Props) => {
     props.handleClose();
   };
   const thenClose = (act: Promise<any>) => {
-    return act.then((res)=>{if (userStore.status === "success") handleClose()});
+    return act.then((res) => {
+      if (userStore.status === "success") handleClose();
+    });
   };
   const handleSubmit = (data: UserType) => {
     return thenClose(

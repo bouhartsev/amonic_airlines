@@ -13,7 +13,7 @@ import { useStore } from "stores";
 import { toJS } from "mobx";
 import UserForm from "./UserForm";
 import { roleByID } from "stores/UserStore";
-import "index.css";
+import { tableBaseSX } from "utils/theme";
 
 export type DialogModelType = "add" | "change" | undefined;
 
@@ -70,19 +70,8 @@ const Users = (props: Props) => {
         columns={columns}
         autoHeight
         loading={userStore.status === "pending"}
-        sx={{
-          "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-root .MuiDataGrid-cell:focus-within":
-            {
-              outline: "none !important",
-            },
-          "& .is-active-user--false": {
-            color: (theme) => theme.palette.error.contrastText,
-          },
-          "& .is-active-user--false::before": {
-            bgcolor: (theme) => theme.palette.error.light,
-          },
-        }}
-        getRowClassName={(params) => `is-active-user--${params.row.active}`}
+        sx={tableBaseSX}
+        getRowClassName={(params) => `row-status--${params.row.active}`}
         selectionModel={selectionModel}
         onSelectionModelChange={(newModel, opt) => {
           setSelectionModel(newModel);

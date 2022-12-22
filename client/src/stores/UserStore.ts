@@ -21,6 +21,21 @@ export type UserType = {
     password?: string,
 };
 
+type ProfileType = {
+    "iat": number,
+    "exp": number,
+    "numberOfCrashes": number,
+    "userLogins": Record<string,
+        {
+            "id": string,
+            "error": string,
+            "loginTime": string,
+            "logoutTime": string,
+            "timeSpent": string,
+        }
+    >[]
+}
+
 type OfficeType = { id: number, title: string };
 
 class UserStore extends BasicStore {
@@ -34,6 +49,7 @@ class UserStore extends BasicStore {
 
     isLogged: boolean = false;
     userData: UserType | Record<string, never> = {};
+    profileData: ProfileType | Record<string, never> = {};
     users: UserType[] = [];
     offices: OfficeType[] = [];
 
@@ -42,11 +58,14 @@ class UserStore extends BasicStore {
 
     setAuth = (token: string) => {
         const tokenData: any = jwt_decode(token);
-        if (Date.now() >= tokenData.exp * 1000) return; // check if token is valid
+        const { user, ...profile } = tokenData;
+        if (profile.exp * 1000 - Date.now() <= 0) return; // check if token is valid
         this.isLogged = true;
         setAuthToken(token);
-        this.userData = { ...tokenData.user, role: roleByID(tokenData.user.roleId) };
+        this.userData = { ...user, role: roleByID(user.roleId) };
+        this.profileData = { ...this.profileData, ...profile };
     }
+
     removeAuth = () => {
         this.isLogged = false;
         localStorage.removeItem("jwtToken");
@@ -101,6 +120,20 @@ class UserStore extends BasicStore {
         });
     }
 
+    getProfile = (userId: UserType["id"]) => {
+        this.status = "pending";
+        return api.get("/users/" + userId + "/logins")
+            .then((response: any) => {
+                runInAction(() => {
+                    this.status = "success";
+                    this.error = "";
+                    const data = response.data;
+                    data.userLogins = data.userLogins.map((el:ProfileType["userLogins"][number], ind: number) => ({ ...el, id: ind }));
+                    this.profileData = { ...this.profileData, ...data };
+                });
+            })
+            .catch((err) => { this.status = "error"; throw err; });
+    }
     getUsers = () => {
         this.status = "pending";
         return api.get("/users")
@@ -108,10 +141,10 @@ class UserStore extends BasicStore {
                 runInAction(() => {
                     this.status = "success";
                     this.error = "";
-                    this.users = response.data.users;//.map((el: any) => ({ ...el, active: false }));
+                    this.users = response.data.users;
                 });
             })
-            .catch((err) => { this.status = "error"; }); // throw err;
+            .catch((err) => { this.status = "error"; throw err; });
     }
 
     getOffices = () => {
@@ -132,7 +165,6 @@ class UserStore extends BasicStore {
             .then((response: any) => {
                 this.status = "success";
                 this.error = "";
-                console.log(response.data);
                 this.users.push(response.data.user);
             })
             .catch((err) => {
