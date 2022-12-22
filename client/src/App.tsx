@@ -1,7 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { CssBaseline, Container } from '@mui/material';
-
+import { CssBaseline, Container } from "@mui/material";
 
 import NavBar from "components/NavBar";
 import Footer from "components/Footer";
@@ -29,27 +28,26 @@ function App() {
       <NavBar />
       <Container maxWidth="xl" component="main" sx={{ mt: 4 }}>
         <ErrorBoundary key={path}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
 
-          {/* Protected routes (only for authorized users)  */}
-          <Route element={<Protected />}>
-            <Route path="/schedules" element={<Schedules />} />
+            {/* Protected routes (only for authorized users)  */}
+            <Route element={<Protected />}>
+              <Route path="/schedules" element={<Schedules />} />
               <Route path="/booking" element={<Booking />} />
-              <Route path="/surveys" element={<Surveys />} /> 
-            {/* 
-                <Route path="/tickets" element={<Tickets />} />
-                <Route path="/surveys" element={<Surveys />} /> */}
-            <Route path="/profile" element={<Profile />} />
-          </Route>
-          <Route element={<Protected role="administrator" />}>
-            <Route path="/users" element={<Users />} />
-          </Route>
+              {/*<Route path="/tickets" element={<Tickets />} /> */}
+              <Route path="/surveys" element={<Surveys />} />
+              {/*<Route path="/dashboard" element={<Dashboard />} /> */}
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+            <Route element={<Protected role="administrator" />}>
+              <Route path="/users" element={<Users />} />
+            </Route>
 
-          <Route path="*" element={<ErrorPage code="404" />} />
-        </Routes>
+            <Route path="*" element={<ErrorPage code="404" />} />
+          </Routes>
         </ErrorBoundary>
       </Container>
       <Footer />

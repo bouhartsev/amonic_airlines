@@ -5,9 +5,9 @@ import BasicStore from "./BasicStore"
 import jwt_decode from "jwt-decode";
 
 export const roles = ["administrator", "office user"] as const;
-export const roleByID = (roleId: userType["roleId"]) => roles[Number(roleId) - 1];
+export const roleByID = (roleId: UserType["roleId"]) => roles[Number(roleId) - 1];
 
-export type userType = {
+export type UserType = {
     id: number | string,
     role?: typeof roles[number],
     active?: boolean,
@@ -21,7 +21,7 @@ export type userType = {
     password?: string,
 };
 
-type officeType = { id: number, title: string };
+type OfficeType = { id: number, title: string };
 
 class UserStore extends BasicStore {
     constructor(...args: any[]) {
@@ -33,9 +33,9 @@ class UserStore extends BasicStore {
     }
 
     isLogged: boolean = false;
-    userData: userType | Record<string, never> = {};
-    users: userType[] = [];
-    offices: officeType[] = [];
+    userData: UserType | Record<string, never> = {};
+    users: UserType[] = [];
+    offices: OfficeType[] = [];
 
     officeByID = (officeId: number | string) => this.offices.find((item) => item.id == officeId);
     userByID = (userId: number | string) => this.users.find((item) => item?.id == userId);
@@ -90,14 +90,14 @@ class UserStore extends BasicStore {
     }
 
     logout = () => {
-        return api.post("/auth/sign-out")
-            .then((response) => {
-                this.isLogged = false;
-                localStorage.removeItem("jwtToken");
-                setAuthToken();
-                // remove user data
-            })
-            .catch((err) => { this.status = "error"; });
+        this.status = "pending";
+        return api.post("/auth/sign-out").finally(() => {
+            this.status = "initial";
+            this.isLogged = false;
+            localStorage.removeItem("jwtToken");
+            setAuthToken();
+            // remove user data
+        });
     }
 
     getUsers = () => {
@@ -123,7 +123,7 @@ class UserStore extends BasicStore {
             })
             .catch((err) => { this.status = "error"; throw err; });
     }
-    addUser = (data: userType) => {
+    addUser = (data: UserType) => {
         this.status = "pending";
         return api.post("/users", (({ email, firstName, lastName, officeId, birthdate, password }) => ({ email, firstName, lastName, officeId, birthdate, password }))(data))
             .then((response: any) => {
@@ -137,7 +137,7 @@ class UserStore extends BasicStore {
                 else throw err;
             });
     }
-    updateUser = (data: userType) => {
+    updateUser = (data: UserType) => {
         this.status = "pending";
         const userId = data.id
         return api.patch("/users/" + userId, (({ email, firstName, lastName, officeId, roleId }) => ({ email, firstName, lastName, officeId, roleId: Number(roleId) }))(data))
@@ -145,7 +145,7 @@ class UserStore extends BasicStore {
                 this.status = "success";
                 this.error = "";
                 const ind = this.users.findIndex((item) => item?.id == userId);
-                this.users.splice(ind, 1,response.data.user);
+                this.users.splice(ind, 1, response.data.user);
                 // console.log(response.data, data.roleId);
                 return;
             })

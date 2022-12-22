@@ -7,15 +7,14 @@ const Logout = () => {
   const { userStore } = useStore();
 
   useEffect(() => {
-    userStore.logout();
-  
-    return () => {}
-  }, [userStore])
-  
+    if (userStore.isLogged && userStore.status!=="pending")
+      userStore.logout();
 
-  if (!!userStore.isLogged)
-    return <div>Logging out...</div>
-  return <Navigate to="/"/>;
+    return () => {};
+  }, [userStore]);
+
+  if (!!userStore.isLogged) return <div>Logging out...</div>;
+  return <Navigate to="/" />;
 };
 
 export default observer(Logout);

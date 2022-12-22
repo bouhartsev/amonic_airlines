@@ -26,7 +26,7 @@ import { Close as CloseIcon } from "@mui/icons-material";
 import { DialogModelType } from "./";
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
-import { userType, roles } from "stores/UserStore";
+import { UserType, roles } from "stores/UserStore";
 import styles from "./index.module.css";
 import { LoadingButton } from "@mui/lab";
 
@@ -36,13 +36,13 @@ const rolesObj = roles
 
 type Props = {
   model: DialogModelType;
-  userId?: userType["id"];
+  userId?: UserType["id"];
   handleClose: VoidFunction;
 };
 
 const UserForm = (props: Props) => {
   const { userStore } = useStore();
-  const formContext = useForm<userType>();
+  const formContext = useForm<UserType>();
 
   useEffect(() => {
     const currentUser =
@@ -60,13 +60,14 @@ const UserForm = (props: Props) => {
 
   const handleClose = () => {
     userStore.status = "initial";
+    userStore.error = "";
     formContext.reset({});
     props.handleClose();
   };
   const thenClose = (act: Promise<any>) => {
     return act.then((res)=>{if (userStore.status === "success") handleClose()});
   };
-  const handleSubmit = (data: userType) => {
+  const handleSubmit = (data: UserType) => {
     return thenClose(
       props.model === "change" && !!props.userId
         ? userStore.updateUser(data)

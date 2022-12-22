@@ -1,14 +1,17 @@
 import { createContext, useContext } from "react";
-import UserStore from "./UserStore";
 import FakeStore from "./FakeStore";
+import UserStore from "./UserStore";
+import BookingStore from "./BookingStore"
 
 class RootStore {
   fakeStore
   userStore
+  bookingStore
 
   constructor() {
       this.fakeStore = new FakeStore(this);
       this.userStore = new UserStore(this);
+      this.bookingStore = new BookingStore(this);
   }
 }
 

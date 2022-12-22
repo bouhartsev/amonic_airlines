@@ -26,3 +26,19 @@ abstract class BasicStore {
 }
 
 export default BasicStore
+
+// current template
+
+// import { makeSimpleAutoObservable } from "utils/mobx-extensions"
+// import { action } from "mobx";
+// import { api } from "utils/api"
+// import BasicStore from "./BasicStore"
+
+// class NameStore extends BasicStore {
+//     constructor(...args: any[]) {
+//         super(...args);
+//         makeSimpleAutoObservable(this);
+//     }
+// }
+
+// export default NameStore;
