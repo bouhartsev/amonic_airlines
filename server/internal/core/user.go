@@ -175,7 +175,8 @@ func (c *Core) UpdateUser(ctx context.Context, request *domain.UpdateUserRequest
 func (c *Core) GetUserLogins(ctx context.Context, id int) (*domain.GetUserLoginsResponse, error) {
 	rows, err := c.db.QueryContext(ctx, `select DATE_FORMAT(loginTime, "%Y-%m-%d %H:%i"), DATE_FORMAT(logoutTime, "%Y-%m-%d %H:%i"), TIMEDIFF(logoutTime, loginTime), errorReason
                                                from user_logins where userId = ? and loginTime > date_sub(now(), interval 30 day)
-                                               order by loginTime desc`, id)
+                                               order by loginTime desc
+                                               limit 200 offset 1`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -201,13 +202,13 @@ func (c *Core) GetUserLogins(ctx context.Context, id int) (*domain.GetUserLogins
 
 	if len(logins) > 0 {
 		var crashes int
-		err = c.db.QueryRowContext(ctx, "select count(*) from `user_logins` where userId = ? and errorReason is not null and loginTime > date_sub(now(), interval 30 day)", id).Scan(&crashes)
+		err = c.db.QueryRowContext(ctx, "select count(*) from (select id from`user_logins` where userId = ? and logoutTime is null and loginTime > date_sub(now(), interval 30 day) limit 150 offset 1) t", id).Scan(&crashes)
 		if err != nil {
 			return nil, err
 		}
 		resp.NumberOfCrashes = crashes
 
-		err = c.db.QueryRowContext(ctx, "select DATE_FORMAT(loginTime, \"%Y-%m-%d %H:%i\") from user_logins where userId = ? and logoutTime is null and confirmed = false and errorReason is not null and loginTime > date_sub(now(), interval 30 day) order by loginTime desc limit 1", id).Scan(&resp.LastLoginErrorDatetime)
+		err = c.db.QueryRowContext(ctx, "select DATE_FORMAT(loginTime, \"%Y-%m-%d %H:%i\") from user_logins where userId = ? and logoutTime is null and confirmed = false and errorReason is null and loginTime > date_sub(now(), interval 30 day) order by loginTime desc limit 1 offset 1", id).Scan(&resp.LastLoginErrorDatetime)
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, err
 		}
