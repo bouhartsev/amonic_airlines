@@ -5,6 +5,9 @@ import BasicStore from "./BasicStore"
 import jwt_decode from "jwt-decode";
 
 export const roles = ["administrator", "office user"] as const;
+export const rolesOptions = roles
+  .map((el, ind) => ({ id: (ind + 1).toString(), label: el }))
+  .reverse();
 export const roleByID = (roleId: UserType["roleId"]) => roles[Number(roleId) - 1];
 
 export type UserType = {

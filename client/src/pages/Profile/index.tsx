@@ -1,5 +1,12 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridValueFormatterParams,
+  GridValueGetterParams,
+} from "@mui/x-data-grid";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { tableBaseSX } from "utils/theme";
 import { toJS } from "mobx";
 import React, { useEffect, useState } from "react";
@@ -13,21 +20,27 @@ const getStringOrNull = (params: GridValueGetterParams) =>
   params.row[params.field] || "--";
 const getTimeOrNull = (params: GridValueGetterParams) =>
   !params.row[params.field]
-    ? "--"
-    : new Date(params.row[params.field] + " +0000").toLocaleString();
+    ? null
+    : new Date(params.row[params.field] + " +0000");
+const timeFormatter = (params: GridValueFormatterParams) =>
+  !params.value ? "--" : params.value.toLocaleString();
 
 const columns: GridColDef[] = [
   {
     field: "loginTime",
+    type: "dateTime",
     headerName: "Login time",
     width: 170,
     valueGetter: getTimeOrNull,
+    valueFormatter: timeFormatter,
   },
   {
     field: "logoutTime",
+    type: "dateTime",
     headerName: "Logout time",
     width: 170,
     valueGetter: getTimeOrNull,
+    valueFormatter: timeFormatter,
   },
   {
     field: "timeSpent",
@@ -83,27 +96,29 @@ const Profile = (props: Props) => {
           Welcome to AMONIC Airlines
         </Typography>
       </Box>
-      <Typography gutterBottom>
-        Current session: {currentSessionTime}
-      </Typography>
-      <Typography gutterBottom>
-        Number of crashes: {userStore.profileData.numberOfCrashes}
-      </Typography>
-      <DataGrid
-        rows={toJS(userStore.profileData.userLogins || [])}
-        columns={columns}
-        autoHeight
-        loading={userStore.status === "pending"}
-        sx={tableBaseSX}
-        getRowClassName={(params) =>
-          `row-status--${!params.row.error && !!params.row.logoutTime}`
-        }
-        disableSelectionOnClick
-      />
-      <UndetectedForm
-        open={undetected}
-        handleClose={() => setUndetected(false)}
-      />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Typography gutterBottom>
+          Current session: {currentSessionTime}
+        </Typography>
+        <Typography gutterBottom>
+          Number of crashes: {userStore.profileData.numberOfCrashes}
+        </Typography>
+        <DataGrid
+          rows={toJS(userStore.profileData.userLogins || [])}
+          columns={columns}
+          autoHeight
+          loading={userStore.status === "pending"}
+          sx={tableBaseSX}
+          getRowClassName={(params) =>
+            `row-status--${!params.row.error && !!params.row.logoutTime}`
+          }
+          disableSelectionOnClick
+        />
+        <UndetectedForm
+          open={undetected}
+          handleClose={() => setUndetected(false)}
+        />
+      </LocalizationProvider>
     </>
   );
 };
