@@ -29,7 +29,7 @@ const NavBar = (props: Props) => {
   const [options] = React.useState(
     [
       "Dashboard",
-      props.role === "Administrator" && "Users",
+      props.role === "administrator" && "Users",
       "Profile",
       "Logout",
     ].filter(Boolean)
@@ -99,7 +99,7 @@ const NavBar = (props: Props) => {
       >
         <MenuIcon />
       </IconButton>
-      <Image path="logo_colors" hasSet />
+      <a href="/"><Image path="logo_colors" hasSet alt="Amonic Airlines Logo" /></a>
       <Box sx={{ flexGrow: 1, ml: 3, display: { xs: "none", sm: "flex" } }}>
         {pages.map((page) => (
           <Button
@@ -118,7 +118,7 @@ const NavBar = (props: Props) => {
       <Box sx={{ flexGrow: 0 }}>
         <Tooltip title="Open options">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt="User Name" src="/path/to/photo.png" />
+            <Avatar src="/path/to/photo.png" />
           </IconButton>
         </Tooltip>
         <Menu

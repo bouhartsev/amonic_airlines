@@ -1,191 +1,146 @@
-import React from 'react'
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
+import { Typography, Grid } from "@mui/material";
 import Button from "@mui/material/Button";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
+// import {
+//   useForm,
+//   Controller,
+//   SubmitHandler,
+//   useFormState,
+// } from "react-hook-form";
 import {
-    useForm,
-    Controller,
-    SubmitHandler,
-    useFormState,
-  } from "react-hook-form";
-  
-  import {
-    firstNameValidation,
-    lastNameValidation,
-    passportNumberValidation,
-    phoneValidation,
-  } from "./validate";
-  
-  import PassengersList from "./PassengersList";
-  import FlightDetails from "./FlightDetails";
+  useForm,
+  FormContainer,
+  TextFieldElement,
+  AutocompleteElement,
+  DatePickerElement,
+} from "react-hook-form-mui";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-type Props = {}
+import { observer } from "mobx-react-lite";
+import { runInAction } from "mobx";
+import { useStore } from "stores";
+import { PassengerType } from "stores/BookingStore";
+import PassengersList from "./PassengersList";
+import { useEffect } from "react";
 
-interface IBookingForm {
-    firstName: string;
-    lastName: string;
-    birthdate: Date;
-    passportNumber: number;
-    passportCountry: string;
-    phone: number;
-  }
+const BookingConf = () => {
+  const { bookingStore, flightStore } = useStore();
+  const outboundSchedule = flightStore.scheduleByID(
+    bookingStore.outbound?.scheduleId
+  );
+  const returnSchedule = flightStore.scheduleByID(
+    bookingStore.return?.scheduleId
+  );
+  const handleSubmit = (data: PassengerType) => {
+    runInAction(() => bookingStore.passengers.push(data));
+  };
 
-const BookingConf = (props: Props) => {
-    const { handleSubmit, control } = useForm<IBookingForm>();
-  const { errors } = useFormState({ control });
-  const onSubmit: SubmitHandler<IBookingForm> = (data) => console.log(data);
+  const formContext = useForm<PassengerType>();
+
+  useEffect(() => {
+    bookingStore?.getCountries();
+
+    return () => {};
+  }, []);
+
   return (
-    <div><FlightDetails />
-
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Typography sx={{ mt: 5 }} variant="subtitle1">
-        Passenger details
-      </Typography>
+    <>
+      <Typography variant="subtitle1" sx={{my:2}}>Outbound flight details</Typography>
       <Grid
         container
-        rowSpacing={1}
-        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        justifyContent="center"
-        alignItems="center"
+        justifyContent="space-between"
+        wrap="wrap"
+        rowSpacing={2}
+        columnSpacing={2}
       >
-        <Grid item xs={4}>
-          <Controller
-            control={control}
-            rules={firstNameValidation}
-            name="firstName"
-            render={({ field }) => (
-              <TextField
-                size="small"
-                label="FirstName"
-                margin="normal"
-                fullWidth={true}
-                helperText={errors.firstName?.message}
-                error={!!errors.firstName?.message}
-                onChange={(e) => field.onChange(e)}
-                value={field.value}
-              />
-            )}
-          />
+        <Grid item>
+          From: <b>{outboundSchedule?.from}</b>
         </Grid>
-        <Grid item xs={4}>
-          <Controller
-            control={control}
-            rules={lastNameValidation}
-            name="lastName"
-            render={({ field }) => (
-              <TextField
-                label="LastName"
-                size="small"
-                margin="normal"
-                fullWidth={true}
-                helperText={errors.lastName?.message}
-                error={!!errors.lastName?.message}
-                onChange={(e) => field.onChange(e)}
-                value={field.value}
-              />
-            )}
-          />
+        <Grid item>
+          To: <b>{outboundSchedule?.to}</b>
         </Grid>
-        <Grid item xs={4}>
-          <Controller
-            control={control}
-            name="birthdate"
-            render={({ field }) => (
-              <TextField
-                size="small"
-                margin="normal"
-                fullWidth={true}
-                label="Birthdate"
-                type="date"
-                defaultValue="2017-05-24"
-                value={field.value}
-              />
-            )}
-          />
+        <Grid item>
+          Cabin type: <b>{bookingStore.outbound?.cabinTypeId}</b>
         </Grid>
-        <Grid item xs={4}>
-          <Controller
-            control={control}
-            rules={passportNumberValidation}
-            name="passportNumber"
-            render={({ field }) => (
-              <TextField
-                label="Passport Number"
-                size="small"
-                margin="normal"
-                fullWidth={true}
-                helperText={errors.passportNumber?.message}
-                error={!!errors.passportNumber?.message}
-                onChange={(e) => field.onChange(e)}
-                value={field.value}
-              />
-            )}
-          />
+        <Grid item>
+          Date: <b>{outboundSchedule?.date.toLocaleDateString()}</b>
         </Grid>
-        <Grid item xs={4}>
-          <Controller
-            control={control}
-            // rules={loginValidation}
-            name="passportCountry"
-            render={({ field }) => (
-              <FormControl fullWidth size="small" margin="normal">
-                <InputLabel id="demo-simple-select-label">
-                  Passport country
-                </InputLabel>
-                <Select
-                  id="demo-simple-select"
-                  value={field.value}
-                  label="Passport Country"
-                  onChange={(e) => field.onChange(e)}
-                >
-                  <MenuItem value={"Russia"}>Russia</MenuItem>
-                  <MenuItem>...</MenuItem>
-                  <MenuItem>...</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <Controller
-            control={control}
-            rules={phoneValidation}
-            name="phone"
-            render={({ field }) => (
-              <TextField
-                label="Phone"
-                size="small"
-                margin="normal"
-                fullWidth={true}
-                helperText={errors.phone?.message}
-                error={!!errors.phone?.message}
-                onChange={(e) => field.onChange(e)}
-                value={field.value}
-              />
-            )}
-          />
+        <Grid item>
+          Flight number: <b>{outboundSchedule?.flightNumber}</b>
         </Grid>
       </Grid>
-      <Button
-        type="submit"
-        variant="contained"
-        className="btn-add"
-        fullWidth={true}
-        disableElevation={true}
-        sx={{ width: "25%", mt: 2 }}
-      >
-        Add passenger
-      </Button>
-    </form>
 
-    <PassengersList /></div>
-  )
-}
+      {!!returnSchedule && <>Here is a copy</>}
 
-export default BookingConf
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <FormContainer formContext={formContext} onSuccess={handleSubmit}>
+          <Typography sx={{ my: 2 }} variant="subtitle1">
+            Passenger details
+          </Typography>
+          <Grid
+            container
+            rowSpacing={2}
+            columnSpacing={2}
+            justifyContent="space-between"
+            alignItems="start"
+          >
+            <Grid item xs={6} sm={4}>
+              <TextFieldElement
+                required
+                name="firstName"
+                label="First name"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <TextFieldElement
+                required
+                name="lastName"
+                label="Last name"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <DatePickerElement
+                required
+                name="birthdate"
+                label="Birthday"
+                inputProps={{ fullWidth: true }}
+              />
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <TextFieldElement
+                required
+                name="passportNumber"
+                label="Passport number"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <AutocompleteElement
+                required
+                matchId
+                name="passportCountryId"
+                label="Passport country"
+                autocompleteProps={{
+                  getOptionLabel: (opt: any) => opt.name,
+                }}
+                options={bookingStore.countries}
+              />
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <TextFieldElement required name="phone" label="Phone" fullWidth />
+            </Grid>
+          </Grid>
+          <Button type="submit" variant="contained" fullWidth sx={{ my: 2 }}>
+            Add passenger
+          </Button>
+        </FormContainer>
+      </LocalizationProvider>
+
+      {!!bookingStore.passengers.length && <PassengersList />}
+    </>
+  );
+};
+
+export default observer(BookingConf);

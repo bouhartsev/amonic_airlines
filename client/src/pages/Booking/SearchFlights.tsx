@@ -4,7 +4,7 @@ type Props = {}
 
 const SearchFlights = (props: Props) => {
   return (
-    <div>SearchFlights</div>
+    <>SearchFlightsWidget (NOT READY)</>
   )
 }
 

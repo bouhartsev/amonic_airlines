@@ -26,6 +26,8 @@ class ErrorBoundary extends Component<Props, State> {
   // }
   public componentDidMount(): void {
     const showError = (error: any) => {
+      // add all axios handler
+      // add 401 handler
       this.setState({ error: String(error), showSmall: true });
     };
     window.onerror = showError;

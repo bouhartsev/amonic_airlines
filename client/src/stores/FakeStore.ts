@@ -10,7 +10,7 @@ class FakeStore {
     loginAttemts = 0;
 
     newLoginAtt = () => {
-        if (++this.loginAttemts>3) return Promise.reject({code:"AttemptsExceeded"});
+        if (++this.loginAttemts>3) return Promise.reject({code:"invalid_credentials:series"});
         return Promise.resolve();
     }
     resetLoginAtt = () => {
