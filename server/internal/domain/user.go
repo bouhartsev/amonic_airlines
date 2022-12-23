@@ -64,6 +64,6 @@ type UserLogin struct {
 
 type GetUserLoginsResponse struct {
 	UserLogins             []UserLogin `json:"userLogins"`
-	LastLoginErrorDatetime *string     `json:"LastLoginErrorDatetime" example:"2017-12-31 17:00"`
+	LastLoginErrorDatetime *string     `json:"lastLoginErrorDatetime" example:"2017-12-31 17:00"`
 	NumberOfCrashes        int         `json:"numberOfCrashes" example:"3"`
 }

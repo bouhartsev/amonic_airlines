@@ -182,11 +182,11 @@ func (c *Core) getDetailedReviews(ctx context.Context, req *domain.GetDetailedRe
     							sum(if(CabinTypeId = 1, 1, 0)) as economy,
     							sum(if(CabinTypeId = 2, 1, 0)) as business,
     							sum(if(CabinTypeId = 3, 1, 0)) as first_class,
-    							sum(if(lower(`+"`To`"+`) = 'auh', 1, 0)) as auh,
-    							sum(if(lower(`+"`To`"+`) = 'bah', 1, 0)) as bah,
-    							sum(if(lower(`+"`To`"+`) = 'doh', 1, 0)) as doh,
-    							sum(if(lower(`+"`To`"+`) = 'ryu', 1, 0)) as ryu,
-    							sum(if(lower(`+"`To`"+`) = 'cai', 1, 0)) as cai,
+    							sum(if(lower(`+"`AirportToId`"+`) = 'auh', 1, 0)) as auh,
+    							sum(if(lower(`+"`AirportToId`"+`) = 'bah', 1, 0)) as bah,
+    							sum(if(lower(`+"`AirportToId`"+`) = 'doh', 1, 0)) as doh,
+    							sum(if(lower(`+"`AirportToId`"+`) = 'ryu', 1, 0)) as ryu,
+    							sum(if(lower(`+"`AirportToId`"+`) = 'cai', 1, 0)) as cai,
 								%s
 	                         from reviews
                              where createdAt >= ? and createdAt <= ? `, quest)

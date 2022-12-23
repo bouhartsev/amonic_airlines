@@ -8,8 +8,8 @@ type Schedule struct {
 	Id              int     `json:"id,omitempty" example:"4"`
 	Date            string  `json:"date,omitempty" example:"2017-12-04"`
 	Time            string  `json:"time,omitempty" example:"17:00:00"`
-	From            string  `json:"from,omitempty" example:"AUH"`
-	To              string  `json:"to,omitempty" example:"DOH"`
+	AirportFromId   string  `json:"airportFromId,omitempty" example:"2"`
+	AirportToId     string  `json:"airportToId,omitempty" example:"4"`
 	FlightNumber    int     `json:"flightNumber,omitempty" example:"49"`
 	Aircraft        string  `json:"aircraft,omitempty" example:"Boeing 738"`
 	EmptySeats      int     `json:"emptySeats" example:"84"`

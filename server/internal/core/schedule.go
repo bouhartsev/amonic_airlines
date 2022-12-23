@@ -66,7 +66,7 @@ func (c *Core) GetSchedules(ctx context.Context, request *domain.GetSchedulesReq
 	}
 
 	q := fmt.Sprintf(`select s.id as id, s.date as schedule_date, s.time as schedule_time,
-                                    a1.Name as air_to, a2.Name as air_from,
+                                    a1.id as air_to, a2.id as air_from,
                                     s.FlightNumber as flight_number,
                                     s.confirmed as confirmed,
                                     air.Name as aircraft_name,
@@ -102,8 +102,8 @@ func (c *Core) GetSchedules(ctx context.Context, request *domain.GetSchedulesReq
 			&s.Id,
 			&s.Date,
 			&s.Time,
-			&s.To,
-			&s.From,
+			&s.AirportToId,
+			&s.AirportFromId,
 			&s.FlightNumber,
 			&s.Confirmed,
 			&s.Aircraft,
