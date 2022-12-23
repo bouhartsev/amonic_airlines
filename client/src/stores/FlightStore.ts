@@ -16,6 +16,7 @@ export type FlightType = {
     "economyPrice": number,
     "businessPrice"?: number,
     "firstClassPrice"?: number,
+    "emptySeats"?: number,
 }
 
 type AirportType = {
@@ -35,8 +36,8 @@ class FlightStore extends BasicStore {
     schedules: FlightType[] = [];
     upload = { progress: 0, results: <Record<string, never>>{} };
 
-    scheduleByID = (scheduleId: number | string) => this.schedules.find((item) => item.id == scheduleId);
-    airportByID = (airportId: number | string) => this.airports.find((item) => item.id == airportId);
+    scheduleByID = (id: number | string) => this.schedules.find((item) => item.id == id);
+    airportByID = (id: number | string) => this.airports.find((item) => item.id == id);
 
     getSchedules = () => {
         this.status = "pending";
@@ -81,9 +82,9 @@ class FlightStore extends BasicStore {
             .catch((err) => { this.status = "error"; throw err; });
     }
     uploadSchedules = (files: any) => {
-        console.log(files);
+        if (!files || !files.length) return;
         const formData = new FormData();
-        formData.append("image", files[0]);
+        formData.append("file", files[0]);
         return api.post("/schedules/upload", formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'

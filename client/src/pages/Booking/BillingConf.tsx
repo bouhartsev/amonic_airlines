@@ -1,11 +1,9 @@
-import React from 'react'
+import React from "react";
 
-type Props = {}
+type Props = {};
 
 const BillingConf = (props: Props) => {
-  return (
-    <div>BillingConf</div>
-  )
-}
+  return <>Billing Confirmation Widget (NOT READY)</>;
+};
 
-export default BillingConf
+export default BillingConf;

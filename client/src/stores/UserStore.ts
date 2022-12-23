@@ -63,8 +63,8 @@ class UserStore extends BasicStore {
     users: UserType[] = [];
     offices: OfficeType[] = [];
 
-    officeByID = (officeId: number | string) => this.offices.find((item) => item.id == officeId);
-    userByID = (userId: number | string) => this.users.find((item) => item?.id == userId);
+    officeByID = (id: number | string) => this.offices.find((item) => item.id == id);
+    userByID = (id: number | string) => this.users.find((item) => item?.id == id);
 
     setAuth = (token: string) => {
         const tokenData: any = jwt_decode(token);

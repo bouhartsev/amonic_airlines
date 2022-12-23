@@ -79,7 +79,7 @@ const ImportForm = (props: Props) => {
             <input
               hidden
               accept=".csv"
-              multiple
+              // multiple
               type="file"
               onChange={(e) => flightStore.uploadSchedules(e.target.files)}
             />
