@@ -9,6 +9,7 @@ import {
   GridRowParams,
   GridLinkOperator,
   ValueOptions,
+  GridValueFormatterParams,
 } from "@mui/x-data-grid";
 import { observer } from "mobx-react-lite";
 import { useStore } from "stores";
@@ -30,25 +31,27 @@ const Users = (props: Props) => {
     { field: "lastName", headerName: "Last name", width: 130 },
     { field: "age", type: "number", headerName: "Age", width: 90 },
     {
-      field: "role",
+      field: "roleId",
       headerName: "User Role",
       type: "singleSelect",
       valueOptions: () =>
         rolesOptions.map(
           (el) =>
             ({
-              value: el.label,
+              value: el.id,
               label: el.label,
             } as ValueOptions)
         ),
       sortable: false,
       width: 160,
+      valueFormatter: (params: GridValueFormatterParams) =>
+        roleByID(params.value),
       valueGetter: (params: GridValueGetterParams) =>
-        roleByID(params.row.roleId),
+        params.row.roleId.toString(),
     },
     { field: "email", headerName: "Email address", flex: 1, minWidth: 100 },
     {
-      field: "office",
+      field: "officeId",
       headerName: "Office",
       width: 130,
       type: "singleSelect",
@@ -56,34 +59,14 @@ const Users = (props: Props) => {
         userStore.offices.map(
           (el) =>
             ({
-              value: el.title,
+              value: el.id,
               label: el.title,
             } as ValueOptions)
         ),
-      valueGetter: (params: GridValueGetterParams) =>
-        userStore.officeByID(params.row.officeId)?.title,
+      valueFormatter: (params: GridValueFormatterParams) =>
+        userStore.officeByID(params.value)?.title,
     },
   ];
-
-  // const operator: GridFilterOperator = {
-  //   label: "From",
-  //   value: "from",
-  //   getApplyFilterFn: (filterItem: GridFilterItem, column: GridColDef) => {
-  //     if (
-  //       !filterItem.columnField ||
-  //       !filterItem.value ||
-  //       !filterItem.operatorValue
-  //     ) {
-  //       return null;
-  //     }
-
-  //     return (params: GridCellParams): boolean => {
-  //       return Number(params.value) >= Number(filterItem.value);
-  //     };
-  //   },
-  //   InputComponent: RatingInputValue,
-  //   InputComponentProps: { type: "number" },
-  // };
 
   useEffect(() => {
     if (userStore) {
@@ -168,19 +151,6 @@ const Users = (props: Props) => {
             </GridToolbarContainer>
           ),
         }}
-        // initialState={{
-        //   filter: {
-        //     filterModel: {
-        //       items: [
-        //         {
-        //           columnField: "office",
-        //           // operatorValue: "equals",
-        //           // value: "2.5",
-        //         },
-        //       ],
-        //     },
-        //   },
-        // }}
       />
       <UserForm
         model={dialogModel}
