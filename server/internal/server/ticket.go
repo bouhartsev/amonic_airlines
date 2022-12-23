@@ -50,6 +50,7 @@ func (s *Server) AddTicket(c *gin.Context) {
 // @Param user_id query int false "Фильтрация по пользователю, которому принадлежат билеты"
 // @Param schedule_id query int false "Фильтрация по полету, которому принадлежат билеты"
 // @Param booking_reference query int false "Фильтрация по брони, которой принадлежат билеты"
+// @Success 200 {object} domain.GetTicketsResponse
 // @Failure 500 {object} errdomain.ErrorResponse
 // @Router /api/tickets [get]
 func (s *Server) GetTickets(c *gin.Context) {
