@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import {
   DataGrid,
@@ -6,8 +6,6 @@ import {
   GridValueGetterParams,
   GridToolbarContainer,
   GridSelectionModel,
-  GridRowParams,
-  GridLinkOperator,
   ValueOptions,
   GridValueFormatterParams,
 } from "@mui/x-data-grid";

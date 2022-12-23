@@ -3,3 +3,8 @@ export const camelize = (str: string) => {
     return index === 0 ? word.toLowerCase() : word.toUpperCase();
   }).replace(/\s+/g, '');
 }
+
+export const uncamelize = (str: string) => {
+  const result = str.replace(/([A-Z])/g, " $1");
+  return result.charAt(0).toUpperCase() + result.slice(1);
+}

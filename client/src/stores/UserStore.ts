@@ -206,6 +206,7 @@ class UserStore extends BasicStore {
             this.users[ind].active = !this.users[ind].active;
         })
     }
+    
     report = (data: ReportType) => {
         this.status = "pending";
         return api.post("/auth/report", data).then(() => {
