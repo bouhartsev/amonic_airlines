@@ -175,6 +175,7 @@ class UserStore extends BasicStore {
             .then((response: any) => {
                 this.status = "success";
                 this.error = "";
+                console.log(response.data.user);
                 this.users.push(response.data.user);
             })
             .catch((err) => {

@@ -94,8 +94,7 @@ class FlightStore extends BasicStore {
             this.status = "success";
             this.error = "";
             this.upload.results = response.data
-        })
-            .catch((err) => { this.status = "error"; throw err; });
+        }).catch((err) => { this.status = "error"; throw err; });
     }
 }
 
