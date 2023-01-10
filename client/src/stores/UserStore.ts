@@ -33,7 +33,7 @@ type ProfileType = {
     "numberOfCrashes": number,
     "userLogins": Record<string,
         {
-            "id": string,
+            "id": number | string,
             "error": string,
             "loginTime": string,
             "logoutTime": string,
@@ -138,7 +138,7 @@ class UserStore extends BasicStore {
                     this.status = "success";
                     this.error = "";
                     const data = response.data;
-                    data.userLogins = data.userLogins.map((el: ProfileType["userLogins"][number], ind: number) => ({ ...el, id: ind }));
+                    data.userLogins = data.userLogins?.map((el: ProfileType["userLogins"][number], ind: number) => ({ ...el, id: ind }));
                     this.profileData = { ...this.profileData, ...data };
                 });
             })
