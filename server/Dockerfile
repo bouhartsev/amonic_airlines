@@ -2,7 +2,7 @@ FROM golang:1.19-alpine3.16
 
 RUN mkdir -p /app/amonic
 
-COPY server /app/amonic/server
+COPY . /app/amonic/server
 
 WORKDIR /app/amonic/server
 
